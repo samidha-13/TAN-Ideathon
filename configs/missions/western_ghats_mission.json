@@ -1,0 +1,21 @@
+{
+  "mission_name": "western_ghats_mission",
+  "bounds": {
+    "lat_min": 15.0,
+    "lat_max": 15.5,
+    "lon_min": 73.7,
+    "lon_max": 74.2
+  },
+  "waypoints": [
+    {"lat": 15.05, "lon": 73.75},
+    {"lat": 15.12, "lon": 73.84},
+    {"lat": 15.20, "lon": 73.94},
+    {"lat": 15.28, "lon": 74.04},
+    {"lat": 15.38, "lon": 74.12},
+    {"lat": 15.45, "lon": 73.90}
+  ],
+  "altitude": 4000.0,
+  "velocity": 180.0,
+  "sample_rate": 10,
+  "seed": 44
+}
