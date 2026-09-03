@@ -1,0 +1,23 @@
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+@layer base {
+  body {
+    @apply bg-aviation-dark text-aviation-text font-display m-0 p-0 overflow-hidden;
+  }
+}
+
+/* Custom scrollbar for timeline/logs */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-aviation-dark;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-aviation-border rounded;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-aviation-text;
+}
