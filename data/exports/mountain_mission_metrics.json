@@ -1,0 +1,3548 @@
+{
+  "summary": {
+    "total_duration_s": 271.0,
+    "sensor_availability_percent": {
+      "gnss": 92.25092250922509,
+      "radar": 92.10332103321034,
+      "magnetometer": 92.2140221402214,
+      "tan": 50.92250922509225
+    },
+    "navigation_modes_percent": {
+      "FULL_AID": 47.08487084870849,
+      "TAN_ONLY": 3.837638376383764,
+      "GNSS_ONLY": 45.1660516605166,
+      "INS_ONLY": 3.911439114391144
+    },
+    "performance_m": {
+      "mean_3d_error": 5895.118345643403,
+      "max_3d_error": 8431.228089268692,
+      "final_3d_error": 7076.701261416549,
+      "cumulative_ins_drift": 821.6253598565464
+    }
+  },
+  "diagnostics": [
+    {
+      "time": 0.0,
+      "mode": "FULL_AID",
+      "lat": 30.05010544217631,
+      "lon": 78.05016265219757,
+      "alt": 5000.000044629394,
+      "err_3d": 1.0395437574492432,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 0.9999999999999999,
+      "mode": "FULL_AID",
+      "lat": 30.050688282188318,
+      "lon": 78.05095368638888,
+      "alt": 5000.003548028999,
+      "err_3d": 100.60418055284089,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 2.0000000000000004,
+      "mode": "FULL_AID",
+      "lat": 30.05126424906274,
+      "lon": 78.05176033393506,
+      "alt": 5000.010872695215,
+      "err_3d": 200.06943692979493,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 3.0000000000000013,
+      "mode": "FULL_AID",
+      "lat": 30.051835899543214,
+      "lon": 78.05256363518495,
+      "alt": 5000.019940879074,
+      "err_3d": 300.0897139242912,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 4.000000000000002,
+      "mode": "FULL_AID",
+      "lat": 30.052410616576612,
+      "lon": 78.05336642665777,
+      "alt": 5000.030793681028,
+      "err_3d": 399.93100411736714,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 4.999999999999998,
+      "mode": "FULL_AID",
+      "lat": 30.052984403278124,
+      "lon": 78.05417059000212,
+      "alt": 5000.0443784472845,
+      "err_3d": 499.7362174644577,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 5.999999999999995,
+      "mode": "FULL_AID",
+      "lat": 30.053557951302196,
+      "lon": 78.0549753699943,
+      "alt": 5000.060269695657,
+      "err_3d": 599.5125702098484,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 6.999999999999991,
+      "mode": "FULL_AID",
+      "lat": 30.054134177993156,
+      "lon": 78.05577946388723,
+      "alt": 5000.077536551674,
+      "err_3d": 699.1501067151089,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 7.999999999999988,
+      "mode": "FULL_AID",
+      "lat": 30.054710459799495,
+      "lon": 78.0565852166776,
+      "alt": 5000.100604816993,
+      "err_3d": 798.6604776364692,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 8.999999999999984,
+      "mode": "FULL_AID",
+      "lat": 30.055288486524898,
+      "lon": 78.05739298314833,
+      "alt": 5000.131891350406,
+      "err_3d": 897.8975836622498,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 9.99999999999998,
+      "mode": "FULL_AID",
+      "lat": 30.05586727189233,
+      "lon": 78.0582027592596,
+      "alt": 5000.164355436652,
+      "err_3d": 996.931611610761,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 10.999999999999977,
+      "mode": "TAN_ONLY",
+      "lat": 30.055867495976955,
+      "lon": 78.05820191361691,
+      "alt": 5000.201551296368,
+      "err_3d": 1197.195910486535,
+      "fdi": {
+        "gnss": "ISOLATED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 11.999999999999973,
+      "mode": "TAN_ONLY",
+      "lat": 30.055867661550977,
+      "lon": 78.05820088930857,
+      "alt": 5000.244026415612,
+      "err_3d": 1397.4762531433494,
+      "fdi": {
+        "gnss": "ISOLATED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 12.99999999999997,
+      "mode": "TAN_ONLY",
+      "lat": 30.055867921738773,
+      "lon": 78.05819967158965,
+      "alt": 5000.2907608561445,
+      "err_3d": 1597.762885882637,
+      "fdi": {
+        "gnss": "ISOLATED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 13.999999999999966,
+      "mode": "TAN_ONLY",
+      "lat": 30.055868277087107,
+      "lon": 78.05819824652444,
+      "alt": 5000.342492389879,
+      "err_3d": 1798.056806112476,
+      "fdi": {
+        "gnss": "ISOLATED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 14.999999999999963,
+      "mode": "TAN_ONLY",
+      "lat": 30.055868771930854,
+      "lon": 78.05819668460296,
+      "alt": 5000.394172993688,
+      "err_3d": 1998.3496355013096,
+      "fdi": {
+        "gnss": "ISOLATED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 15.99999999999996,
+      "mode": "TAN_ONLY",
+      "lat": 30.055869404259855,
+      "lon": 78.05819485699546,
+      "alt": 5000.4479857645565,
+      "err_3d": 2198.651091449201,
+      "fdi": {
+        "gnss": "ISOLATED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 16.99999999999997,
+      "mode": "TAN_ONLY",
+      "lat": 30.055870220402173,
+      "lon": 78.05819291406509,
+      "alt": 5000.50421392326,
+      "err_3d": 2398.946719677003,
+      "fdi": {
+        "gnss": "ISOLATED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 17.999999999999986,
+      "mode": "TAN_ONLY",
+      "lat": 30.05587133042636,
+      "lon": 78.05819064084717,
+      "alt": 5000.560908614854,
+      "err_3d": 2599.2447013074957,
+      "fdi": {
+        "gnss": "ISOLATED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 19.0,
+      "mode": "TAN_ONLY",
+      "lat": 30.055872541152706,
+      "lon": 78.05818816632498,
+      "alt": 5000.623827482032,
+      "err_3d": 2799.5491375360543,
+      "fdi": {
+        "gnss": "ISOLATED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 20.000000000000014,
+      "mode": "TAN_ONLY",
+      "lat": 30.055874047926537,
+      "lon": 78.05818527701992,
+      "alt": 5000.694561657873,
+      "err_3d": 2999.8620615547406,
+      "fdi": {
+        "gnss": "ISOLATED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 21.00000000000003,
+      "mode": "FULL_AID",
+      "lat": 30.056951586161166,
+      "lon": 78.05969002248499,
+      "alt": 5000.772420995079,
+      "err_3d": 3011.9138944663505,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 22.000000000000043,
+      "mode": "FULL_AID",
+      "lat": 30.058575771879003,
+      "lon": 78.06195949310343,
+      "alt": 5000.850335004785,
+      "err_3d": 2928.415739446334,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 23.000000000000057,
+      "mode": "FULL_AID",
+      "lat": 30.060032138706788,
+      "lon": 78.0639944761311,
+      "alt": 5000.9255440885645,
+      "err_3d": 2874.2329869389646,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 24.00000000000007,
+      "mode": "FULL_AID",
+      "lat": 30.06136017630282,
+      "lon": 78.06584855478795,
+      "alt": 5001.001503984732,
+      "err_3d": 2842.5859580771375,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 25.000000000000085,
+      "mode": "FULL_AID",
+      "lat": 30.06258607005654,
+      "lon": 78.0675599228759,
+      "alt": 5001.087755496846,
+      "err_3d": 2828.78108744195,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 26.0000000000001,
+      "mode": "FULL_AID",
+      "lat": 30.063731233685782,
+      "lon": 78.06915790448319,
+      "alt": 5001.178929289366,
+      "err_3d": 2829.122111484509,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 27.000000000000114,
+      "mode": "FULL_AID",
+      "lat": 30.064811342369453,
+      "lon": 78.07066350645486,
+      "alt": 5001.276847560074,
+      "err_3d": 2840.9374390585226,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 28.000000000000128,
+      "mode": "FULL_AID",
+      "lat": 30.06583854448511,
+      "lon": 78.07209423121472,
+      "alt": 5001.382150067,
+      "err_3d": 2862.065722250539,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 29.000000000000142,
+      "mode": "FULL_AID",
+      "lat": 30.066820572997262,
+      "lon": 78.07346339385204,
+      "alt": 5001.494783540429,
+      "err_3d": 2890.9694302015864,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 30.000000000000156,
+      "mode": "GNSS_ONLY",
+      "lat": 30.067766562338814,
+      "lon": 78.07478137229063,
+      "alt": 5001.612293826509,
+      "err_3d": 2926.230365625825,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "SUSPECTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 31.00000000000017,
+      "mode": "GNSS_ONLY",
+      "lat": 30.068681428002932,
+      "lon": 78.07605534024755,
+      "alt": 5001.732808073276,
+      "err_3d": 2966.9671467531243,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ISOLATED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 32.000000000000185,
+      "mode": "GNSS_ONLY",
+      "lat": 30.069571029251215,
+      "lon": 78.07729313471626,
+      "alt": 5001.853080621347,
+      "err_3d": 3012.182333419123,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ISOLATED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 33.0000000000002,
+      "mode": "GNSS_ONLY",
+      "lat": 30.070437907596588,
+      "lon": 78.07850014350979,
+      "alt": 5001.980070890155,
+      "err_3d": 3061.2952976280276,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ISOLATED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 34.00000000000021,
+      "mode": "GNSS_ONLY",
+      "lat": 30.07128655560348,
+      "lon": 78.07968025650486,
+      "alt": 5002.109972827865,
+      "err_3d": 3113.698933705588,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ISOLATED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 35.00000000000023,
+      "mode": "GNSS_ONLY",
+      "lat": 30.072119012550175,
+      "lon": 78.08083823976786,
+      "alt": 5002.243582410199,
+      "err_3d": 3168.8943961691584,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ISOLATED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 36.00000000000024,
+      "mode": "GNSS_ONLY",
+      "lat": 30.072938160322863,
+      "lon": 78.08197716050715,
+      "alt": 5002.381200077537,
+      "err_3d": 3226.4496963322295,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ISOLATED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 37.000000000000256,
+      "mode": "GNSS_ONLY",
+      "lat": 30.07374514232962,
+      "lon": 78.08309993873726,
+      "alt": 5002.521909938017,
+      "err_3d": 3286.0666677863223,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ISOLATED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 38.00000000000027,
+      "mode": "GNSS_ONLY",
+      "lat": 30.07454256960115,
+      "lon": 78.08420837382957,
+      "alt": 5002.665470677517,
+      "err_3d": 3347.426857242981,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ISOLATED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 39.000000000000284,
+      "mode": "GNSS_ONLY",
+      "lat": 30.07533145470963,
+      "lon": 78.0853056405976,
+      "alt": 5002.8124844887,
+      "err_3d": 3410.222383555803,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ISOLATED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 40.0000000000003,
+      "mode": "GNSS_ONLY",
+      "lat": 30.076113514543305,
+      "lon": 78.08639282981267,
+      "alt": 5002.961497448396,
+      "err_3d": 3474.2507387805676,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ISOLATED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 41.00000000000031,
+      "mode": "FULL_AID",
+      "lat": 30.076889761082764,
+      "lon": 78.08747193654477,
+      "alt": 5003.113818565664,
+      "err_3d": 3539.291904235817,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 42.00000000000033,
+      "mode": "FULL_AID",
+      "lat": 30.077660972540624,
+      "lon": 78.08854445474817,
+      "alt": 5003.266743303278,
+      "err_3d": 3605.179672511922,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 43.00000000000034,
+      "mode": "FULL_AID",
+      "lat": 30.07842853964497,
+      "lon": 78.08961113713146,
+      "alt": 5003.421437082191,
+      "err_3d": 3671.7597803063654,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 44.000000000000355,
+      "mode": "FULL_AID",
+      "lat": 30.07919425749172,
+      "lon": 78.09067535449086,
+      "alt": 5003.582398347914,
+      "err_3d": 3752.5263847545707,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 45.00000000000037,
+      "mode": "FULL_AID",
+      "lat": 30.079959815156805,
+      "lon": 78.09173726657446,
+      "alt": 5003.745204447892,
+      "err_3d": 3819.5330411113514,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 46.000000000000384,
+      "mode": "FULL_AID",
+      "lat": 30.080724112303976,
+      "lon": 78.09279491463876,
+      "alt": 5003.911126913916,
+      "err_3d": 3886.951422601044,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 47.0000000000004,
+      "mode": "FULL_AID",
+      "lat": 30.081488072282035,
+      "lon": 78.09384985548195,
+      "alt": 5004.078966927161,
+      "err_3d": 3954.5997161765295,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 48.00000000000041,
+      "mode": "FULL_AID",
+      "lat": 30.082252102509777,
+      "lon": 78.09490221554809,
+      "alt": 5004.248711371746,
+      "err_3d": 4022.4389582438853,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 49.000000000000426,
+      "mode": "FULL_AID",
+      "lat": 30.0830166510095,
+      "lon": 78.09595317188807,
+      "alt": 5004.42024683571,
+      "err_3d": 4090.349404661079,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 50.00000000000044,
+      "mode": "FULL_AID",
+      "lat": 30.083781652738537,
+      "lon": 78.09700339063708,
+      "alt": 5004.590640518556,
+      "err_3d": 4158.285836866069,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "SUSPECTED"
+      }
+    },
+    {
+      "time": 51.000000000000455,
+      "mode": "FULL_AID",
+      "lat": 30.084547706768245,
+      "lon": 78.09805301294155,
+      "alt": 5004.764187292652,
+      "err_3d": 4226.194772977832,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ISOLATED"
+      }
+    },
+    {
+      "time": 52.00000000000047,
+      "mode": "FULL_AID",
+      "lat": 30.085315077506287,
+      "lon": 78.09910256570329,
+      "alt": 5004.941858411512,
+      "err_3d": 4294.017965948048,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ISOLATED"
+      }
+    },
+    {
+      "time": 53.00000000000048,
+      "mode": "FULL_AID",
+      "lat": 30.086084490568364,
+      "lon": 78.1001532424877,
+      "alt": 5005.12223339027,
+      "err_3d": 4361.6150506872555,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ISOLATED"
+      }
+    },
+    {
+      "time": 54.0000000000005,
+      "mode": "FULL_AID",
+      "lat": 30.0868558557601,
+      "lon": 78.10120480607281,
+      "alt": 5005.3058386179255,
+      "err_3d": 4429.009682121369,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ISOLATED"
+      }
+    },
+    {
+      "time": 55.00000000000051,
+      "mode": "FULL_AID",
+      "lat": 30.087629123496967,
+      "lon": 78.10225786747073,
+      "alt": 5005.49802316006,
+      "err_3d": 4496.159991602361,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ISOLATED"
+      }
+    },
+    {
+      "time": 56.000000000000526,
+      "mode": "FULL_AID",
+      "lat": 30.088405214908576,
+      "lon": 78.1033125841622,
+      "alt": 5005.695838107239,
+      "err_3d": 4562.988293595193,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ISOLATED"
+      }
+    },
+    {
+      "time": 57.00000000000054,
+      "mode": "FULL_AID",
+      "lat": 30.08918359828156,
+      "lon": 78.10436976908142,
+      "alt": 5005.897783886112,
+      "err_3d": 4629.472372118971,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ISOLATED"
+      }
+    },
+    {
+      "time": 58.000000000000554,
+      "mode": "FULL_AID",
+      "lat": 30.089964639488652,
+      "lon": 78.10542940217294,
+      "alt": 5006.100792380675,
+      "err_3d": 4695.587393444861,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ISOLATED"
+      }
+    },
+    {
+      "time": 59.00000000000057,
+      "mode": "FULL_AID",
+      "lat": 30.0907483695869,
+      "lon": 78.10649159241264,
+      "alt": 5006.307795632416,
+      "err_3d": 4761.322944315471,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ISOLATED"
+      }
+    },
+    {
+      "time": 60.00000000000058,
+      "mode": "FULL_AID",
+      "lat": 30.091535425456335,
+      "lon": 78.10755713428216,
+      "alt": 5006.521754538206,
+      "err_3d": 4826.574706005757,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ISOLATED"
+      }
+    },
+    {
+      "time": 61.0000000000006,
+      "mode": "FULL_AID",
+      "lat": 30.092325274460663,
+      "lon": 78.10862529394076,
+      "alt": 5006.7388532552,
+      "err_3d": 4891.434790450625,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 62.00000000000061,
+      "mode": "FULL_AID",
+      "lat": 30.093118589457415,
+      "lon": 78.1096978268338,
+      "alt": 5006.95973178103,
+      "err_3d": 4955.725555936563,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 63.000000000000625,
+      "mode": "FULL_AID",
+      "lat": 30.093915244391265,
+      "lon": 78.11077379947768,
+      "alt": 5007.187509222759,
+      "err_3d": 5019.524710569926,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 64.00000000000064,
+      "mode": "FULL_AID",
+      "lat": 30.094715435221268,
+      "lon": 78.11185344745051,
+      "alt": 5007.418526198492,
+      "err_3d": 5082.800753714149,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 65.00000000000058,
+      "mode": "FULL_AID",
+      "lat": 30.095519383545586,
+      "lon": 78.11293763714622,
+      "alt": 5007.655775168263,
+      "err_3d": 5145.473944687598,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 66.00000000000053,
+      "mode": "FULL_AID",
+      "lat": 30.09632697796105,
+      "lon": 78.11402554091268,
+      "alt": 5007.896519966711,
+      "err_3d": 5207.613109452907,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 67.00000000000047,
+      "mode": "FULL_AID",
+      "lat": 30.09713840254928,
+      "lon": 78.11511832951939,
+      "alt": 5008.138549077124,
+      "err_3d": 5269.1188543773815,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 68.00000000000041,
+      "mode": "FULL_AID",
+      "lat": 30.097953352745897,
+      "lon": 78.11621506482612,
+      "alt": 5008.385166128636,
+      "err_3d": 5330.082012495089,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 69.00000000000036,
+      "mode": "FULL_AID",
+      "lat": 30.0987721880201,
+      "lon": 78.11731687940704,
+      "alt": 5008.6364509620225,
+      "err_3d": 5390.393448095438,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 70.0000000000003,
+      "mode": "INS_ONLY",
+      "lat": 30.09951358981855,
+      "lon": 78.11831209164548,
+      "alt": 5008.891185378546,
+      "err_3d": 5464.108765951247,
+      "fdi": {
+        "gnss": "SUSPECTED",
+        "radar": "SUSPECTED",
+        "mag": "SUSPECTED"
+      }
+    },
+    {
+      "time": 71.00000000000024,
+      "mode": "INS_ONLY",
+      "lat": 30.0995240903564,
+      "lon": 78.11830883538467,
+      "alt": 5009.149792143425,
+      "err_3d": 5663.765214398818,
+      "fdi": {
+        "gnss": "ISOLATED",
+        "radar": "ISOLATED",
+        "mag": "ISOLATED"
+      }
+    },
+    {
+      "time": 72.00000000000018,
+      "mode": "INS_ONLY",
+      "lat": 30.09953473235995,
+      "lon": 78.11830573225653,
+      "alt": 5009.41089359634,
+      "err_3d": 5863.399154193329,
+      "fdi": {
+        "gnss": "ISOLATED",
+        "radar": "ISOLATED",
+        "mag": "ISOLATED"
+      }
+    },
+    {
+      "time": 73.00000000000013,
+      "mode": "INS_ONLY",
+      "lat": 30.09954553156275,
+      "lon": 78.11830281545362,
+      "alt": 5009.679695692575,
+      "err_3d": 6063.006986134852,
+      "fdi": {
+        "gnss": "ISOLATED",
+        "radar": "ISOLATED",
+        "mag": "ISOLATED"
+      }
+    },
+    {
+      "time": 74.00000000000007,
+      "mode": "INS_ONLY",
+      "lat": 30.099556533128652,
+      "lon": 78.11830010176774,
+      "alt": 5009.954188366411,
+      "err_3d": 6262.584200424612,
+      "fdi": {
+        "gnss": "ISOLATED",
+        "radar": "ISOLATED",
+        "mag": "ISOLATED"
+      }
+    },
+    {
+      "time": 75.00000000000001,
+      "mode": "INS_ONLY",
+      "lat": 30.09956771125556,
+      "lon": 78.11829765232547,
+      "alt": 5010.233675542824,
+      "err_3d": 6462.128144993638,
+      "fdi": {
+        "gnss": "ISOLATED",
+        "radar": "ISOLATED",
+        "mag": "ISOLATED"
+      }
+    },
+    {
+      "time": 75.99999999999996,
+      "mode": "INS_ONLY",
+      "lat": 30.099579074253832,
+      "lon": 78.1182954206849,
+      "alt": 5010.514007462023,
+      "err_3d": 6661.64161273751,
+      "fdi": {
+        "gnss": "ISOLATED",
+        "radar": "ISOLATED",
+        "mag": "ISOLATED"
+      }
+    },
+    {
+      "time": 76.9999999999999,
+      "mode": "INS_ONLY",
+      "lat": 30.09959067665366,
+      "lon": 78.11829342565173,
+      "alt": 5010.795602796897,
+      "err_3d": 6861.119277884354,
+      "fdi": {
+        "gnss": "ISOLATED",
+        "radar": "ISOLATED",
+        "mag": "ISOLATED"
+      }
+    },
+    {
+      "time": 77.99999999999984,
+      "mode": "INS_ONLY",
+      "lat": 30.099602569941155,
+      "lon": 78.11829172159946,
+      "alt": 5011.081575311264,
+      "err_3d": 7060.553424194443,
+      "fdi": {
+        "gnss": "ISOLATED",
+        "radar": "ISOLATED",
+        "mag": "ISOLATED"
+      }
+    },
+    {
+      "time": 78.99999999999979,
+      "mode": "INS_ONLY",
+      "lat": 30.09961474200819,
+      "lon": 78.11829030762956,
+      "alt": 5011.369386381844,
+      "err_3d": 7259.944975514986,
+      "fdi": {
+        "gnss": "ISOLATED",
+        "radar": "ISOLATED",
+        "mag": "ISOLATED"
+      }
+    },
+    {
+      "time": 79.99999999999973,
+      "mode": "INS_ONLY",
+      "lat": 30.099627146081595,
+      "lon": 78.11828921595878,
+      "alt": 5011.658177048986,
+      "err_3d": 7459.294927188405,
+      "fdi": {
+        "gnss": "ISOLATED",
+        "radar": "ISOLATED",
+        "mag": "ISOLATED"
+      }
+    },
+    {
+      "time": 80.99999999999967,
+      "mode": "FULL_AID",
+      "lat": 30.100318400665653,
+      "lon": 78.11921157811805,
+      "alt": 5011.9492903207865,
+      "err_3d": 7541.967109139149,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 81.99999999999962,
+      "mode": "FULL_AID",
+      "lat": 30.101669578727765,
+      "lon": 78.12103199184027,
+      "alt": 5012.244655082559,
+      "err_3d": 7511.191701757136,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 82.99999999999956,
+      "mode": "FULL_AID",
+      "lat": 30.10299770589582,
+      "lon": 78.12282019337194,
+      "alt": 5012.547753324721,
+      "err_3d": 7484.4427681637135,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 83.9999999999995,
+      "mode": "FULL_AID",
+      "lat": 30.104304333224828,
+      "lon": 78.12457953924735,
+      "alt": 5012.859381348193,
+      "err_3d": 7461.3622137098655,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 84.99999999999945,
+      "mode": "FULL_AID",
+      "lat": 30.105591363227425,
+      "lon": 78.12631200678034,
+      "alt": 5013.174593911849,
+      "err_3d": 7441.667765066988,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 85.99999999999939,
+      "mode": "FULL_AID",
+      "lat": 30.106860265934067,
+      "lon": 78.12801927039682,
+      "alt": 5013.490982595159,
+      "err_3d": 7425.130543018434,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 86.99999999999933,
+      "mode": "FULL_AID",
+      "lat": 30.10811263828657,
+      "lon": 78.1297040268993,
+      "alt": 5013.812988574641,
+      "err_3d": 7411.437563260223,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 87.99999999999928,
+      "mode": "FULL_AID",
+      "lat": 30.10934968131174,
+      "lon": 78.13136774394599,
+      "alt": 5014.135277880067,
+      "err_3d": 7400.394526639678,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 88.99999999999922,
+      "mode": "FULL_AID",
+      "lat": 30.110572877952276,
+      "lon": 78.13301197226046,
+      "alt": 5014.461061615639,
+      "err_3d": 7391.7807024688545,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 89.99999999999916,
+      "mode": "FULL_AID",
+      "lat": 30.11178317375035,
+      "lon": 78.13463828773969,
+      "alt": 5014.790416236134,
+      "err_3d": 7385.412295142105,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 90.9999999999991,
+      "mode": "GNSS_ONLY",
+      "lat": 30.112981522534433,
+      "lon": 78.13624819658878,
+      "alt": 5015.121663569466,
+      "err_3d": 7381.110030587076,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 91.99999999999905,
+      "mode": "GNSS_ONLY",
+      "lat": 30.114168779144816,
+      "lon": 78.1378430112411,
+      "alt": 5015.455815610265,
+      "err_3d": 7378.715988650772,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 92.99999999999899,
+      "mode": "GNSS_ONLY",
+      "lat": 30.115346166772255,
+      "lon": 78.13942340489795,
+      "alt": 5015.79435296187,
+      "err_3d": 7378.092497313443,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 93.99999999999893,
+      "mode": "GNSS_ONLY",
+      "lat": 30.11651438876389,
+      "lon": 78.14099075181512,
+      "alt": 5016.131924225764,
+      "err_3d": 7379.088042202945,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 94.99999999999888,
+      "mode": "GNSS_ONLY",
+      "lat": 30.117673798513994,
+      "lon": 78.14254689742658,
+      "alt": 5016.4707050148945,
+      "err_3d": 7385.088469170997,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 95.99999999999882,
+      "mode": "GNSS_ONLY",
+      "lat": 30.118825913663525,
+      "lon": 78.14409201809404,
+      "alt": 5016.809915428958,
+      "err_3d": 7388.876280607363,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 96.99999999999876,
+      "mode": "GNSS_ONLY",
+      "lat": 30.119970757861104,
+      "lon": 78.14562721077603,
+      "alt": 5017.1511766758185,
+      "err_3d": 7393.917787643858,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 97.9999999999987,
+      "mode": "GNSS_ONLY",
+      "lat": 30.12110842146374,
+      "lon": 78.14715302569337,
+      "alt": 5017.4956099727115,
+      "err_3d": 7400.16614146185,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 98.99999999999865,
+      "mode": "GNSS_ONLY",
+      "lat": 30.122240212887476,
+      "lon": 78.14867017169846,
+      "alt": 5017.842346237665,
+      "err_3d": 7407.474892509435,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 99.9999999999986,
+      "mode": "GNSS_ONLY",
+      "lat": 30.123366402205264,
+      "lon": 78.15017930907891,
+      "alt": 5018.190938692378,
+      "err_3d": 7415.7761463450015,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 100.99999999999854,
+      "mode": "GNSS_ONLY",
+      "lat": 30.124487462334255,
+      "lon": 78.1516814662946,
+      "alt": 5018.54534194865,
+      "err_3d": 7424.9604064002215,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 101.99999999999848,
+      "mode": "GNSS_ONLY",
+      "lat": 30.125603942648834,
+      "lon": 78.15317704064456,
+      "alt": 5018.902773312961,
+      "err_3d": 7434.958867078115,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 102.99999999999842,
+      "mode": "GNSS_ONLY",
+      "lat": 30.12671595137843,
+      "lon": 78.15466695603685,
+      "alt": 5019.260567042349,
+      "err_3d": 7445.696052862705,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 103.99999999999837,
+      "mode": "GNSS_ONLY",
+      "lat": 30.127823965491782,
+      "lon": 78.15615116724052,
+      "alt": 5019.6242126092,
+      "err_3d": 7457.140788866952,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 104.99999999999831,
+      "mode": "GNSS_ONLY",
+      "lat": 30.128928229315967,
+      "lon": 78.15763044544506,
+      "alt": 5019.995707570625,
+      "err_3d": 7469.218951855685,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 105.99999999999825,
+      "mode": "GNSS_ONLY",
+      "lat": 30.130029407411993,
+      "lon": 78.15910536158687,
+      "alt": 5020.372787121141,
+      "err_3d": 7481.84070420328,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 106.9999999999982,
+      "mode": "GNSS_ONLY",
+      "lat": 30.131127283929256,
+      "lon": 78.16057600500855,
+      "alt": 5020.751904761361,
+      "err_3d": 7495.01509927378,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 107.99999999999814,
+      "mode": "GNSS_ONLY",
+      "lat": 30.132222528894506,
+      "lon": 78.16204318866268,
+      "alt": 5021.136468878702,
+      "err_3d": 7508.63419650838,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 108.99999999999808,
+      "mode": "GNSS_ONLY",
+      "lat": 30.133315502375815,
+      "lon": 78.16350697626831,
+      "alt": 5021.524787389791,
+      "err_3d": 7522.667286541588,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 109.99999999999802,
+      "mode": "GNSS_ONLY",
+      "lat": 30.134406103882142,
+      "lon": 78.16496772075679,
+      "alt": 5021.9123593283775,
+      "err_3d": 7537.095803127035,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 110.99999999999797,
+      "mode": "GNSS_ONLY",
+      "lat": 30.1354950739078,
+      "lon": 78.1664261846283,
+      "alt": 5022.302677723694,
+      "err_3d": 7551.810402782275,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 111.99999999999791,
+      "mode": "GNSS_ONLY",
+      "lat": 30.136582180759497,
+      "lon": 78.16788242545849,
+      "alt": 5022.696158096683,
+      "err_3d": 7566.8236257917415,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 112.99999999999785,
+      "mode": "GNSS_ONLY",
+      "lat": 30.137667426161784,
+      "lon": 78.1693368815894,
+      "alt": 5023.093998022145,
+      "err_3d": 7582.103285415312,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 113.9999999999978,
+      "mode": "GNSS_ONLY",
+      "lat": 30.138751718035124,
+      "lon": 78.17078963550792,
+      "alt": 5023.497653208953,
+      "err_3d": 7597.577665789185,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 114.99999999999774,
+      "mode": "GNSS_ONLY",
+      "lat": 30.13983457258289,
+      "lon": 78.17224069612769,
+      "alt": 5023.905441800895,
+      "err_3d": 7613.281109458294,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 115.99999999999768,
+      "mode": "GNSS_ONLY",
+      "lat": 30.140916766634323,
+      "lon": 78.17369083993485,
+      "alt": 5024.315380265981,
+      "err_3d": 7629.100622870882,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 116.99999999999763,
+      "mode": "GNSS_ONLY",
+      "lat": 30.141998051940305,
+      "lon": 78.17513990063945,
+      "alt": 5024.728218842447,
+      "err_3d": 7645.066326311164,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 117.99999999999757,
+      "mode": "GNSS_ONLY",
+      "lat": 30.143078702332506,
+      "lon": 78.17658823701134,
+      "alt": 5025.145450482145,
+      "err_3d": 7661.132169421814,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 118.99999999999751,
+      "mode": "GNSS_ONLY",
+      "lat": 30.144158809659302,
+      "lon": 78.17803609350447,
+      "alt": 5025.565777470951,
+      "err_3d": 7677.273632601044,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 119.99999999999746,
+      "mode": "GNSS_ONLY",
+      "lat": 30.145238446469268,
+      "lon": 78.1794834818207,
+      "alt": 5025.987458195639,
+      "err_3d": 7693.484609878966,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 120.9999999999974,
+      "mode": "GNSS_ONLY",
+      "lat": 30.146317985792738,
+      "lon": 78.18093087466195,
+      "alt": 5026.41038395159,
+      "err_3d": 7709.703544417129,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 121.99999999999734,
+      "mode": "GNSS_ONLY",
+      "lat": 30.147397267486976,
+      "lon": 78.18237813014292,
+      "alt": 5026.8381966390725,
+      "err_3d": 7725.952402005561,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 122.99999999999729,
+      "mode": "GNSS_ONLY",
+      "lat": 30.148476658597367,
+      "lon": 78.1838252391445,
+      "alt": 5027.266190590432,
+      "err_3d": 7742.205271076095,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 123.99999999999723,
+      "mode": "GNSS_ONLY",
+      "lat": 30.149556217453245,
+      "lon": 78.18527259340517,
+      "alt": 5027.693338862292,
+      "err_3d": 7758.429296432763,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 124.99999999999717,
+      "mode": "GNSS_ONLY",
+      "lat": 30.15063614090117,
+      "lon": 78.18672064407988,
+      "alt": 5028.118716580628,
+      "err_3d": 7774.577256887749,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 125.99999999999712,
+      "mode": "GNSS_ONLY",
+      "lat": 30.151716328601776,
+      "lon": 78.1881693177131,
+      "alt": 5028.552463508604,
+      "err_3d": 7790.661790854453,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 126.99999999999706,
+      "mode": "GNSS_ONLY",
+      "lat": 30.152796652435327,
+      "lon": 78.18961840818598,
+      "alt": 5028.990403692848,
+      "err_3d": 7806.707241679044,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 127.999999999997,
+      "mode": "GNSS_ONLY",
+      "lat": 30.15387754984832,
+      "lon": 78.19106823034967,
+      "alt": 5029.433159423493,
+      "err_3d": 7822.658921034487,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 128.99999999999696,
+      "mode": "GNSS_ONLY",
+      "lat": 30.154958735982895,
+      "lon": 78.19251904427075,
+      "alt": 5029.881736721731,
+      "err_3d": 7838.518473717633,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 129.9999999999969,
+      "mode": "GNSS_ONLY",
+      "lat": 30.156040912227365,
+      "lon": 78.19397115691014,
+      "alt": 5030.331763973458,
+      "err_3d": 7854.21266622096,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 130.99999999999685,
+      "mode": "GNSS_ONLY",
+      "lat": 30.157123629532336,
+      "lon": 78.1954239991143,
+      "alt": 5030.7839310668305,
+      "err_3d": 7869.815607249518,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 131.9999999999968,
+      "mode": "GNSS_ONLY",
+      "lat": 30.158207150229643,
+      "lon": 78.1968781018677,
+      "alt": 5031.24146485871,
+      "err_3d": 7885.269510710421,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 132.99999999999673,
+      "mode": "GNSS_ONLY",
+      "lat": 30.159291402685348,
+      "lon": 78.19833370039443,
+      "alt": 5031.704380440082,
+      "err_3d": 7900.562399226032,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 133.99999999999667,
+      "mode": "GNSS_ONLY",
+      "lat": 30.1603765562585,
+      "lon": 78.19979028752506,
+      "alt": 5032.172867465092,
+      "err_3d": 7915.719033499056,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 134.99999999999662,
+      "mode": "GNSS_ONLY",
+      "lat": 30.161462696297612,
+      "lon": 78.20124865297142,
+      "alt": 5032.645530758762,
+      "err_3d": 7930.675572887408,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 135.99999999999656,
+      "mode": "GNSS_ONLY",
+      "lat": 30.16254967507246,
+      "lon": 78.20270818953398,
+      "alt": 5033.116830665998,
+      "err_3d": 7945.487062540773,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 136.9999999999965,
+      "mode": "GNSS_ONLY",
+      "lat": 30.163637776932532,
+      "lon": 78.20416904553102,
+      "alt": 5033.589323585798,
+      "err_3d": 7960.122059003522,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 137.99999999999645,
+      "mode": "GNSS_ONLY",
+      "lat": 30.16472699823396,
+      "lon": 78.20563146372707,
+      "alt": 5034.068083153278,
+      "err_3d": 7974.563107942347,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 138.9999999999964,
+      "mode": "GNSS_ONLY",
+      "lat": 30.1658173503782,
+      "lon": 78.20709537556031,
+      "alt": 5034.550839389612,
+      "err_3d": 7988.814389373891,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 139.99999999999633,
+      "mode": "GNSS_ONLY",
+      "lat": 30.16690881819679,
+      "lon": 78.20856041853399,
+      "alt": 5035.0370674697415,
+      "err_3d": 8002.90345705484,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 140.99999999999628,
+      "mode": "GNSS_ONLY",
+      "lat": 30.16800149239093,
+      "lon": 78.21002703477826,
+      "alt": 5035.5309514873625,
+      "err_3d": 8016.7914673707555,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 141.99999999999622,
+      "mode": "GNSS_ONLY",
+      "lat": 30.1690948889876,
+      "lon": 78.2114953703247,
+      "alt": 5036.033292164641,
+      "err_3d": 8030.502881786154,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 142.99999999999616,
+      "mode": "GNSS_ONLY",
+      "lat": 30.17018968739335,
+      "lon": 78.21296530432286,
+      "alt": 5036.541308699894,
+      "err_3d": 8043.997233936389,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 143.9999999999961,
+      "mode": "GNSS_ONLY",
+      "lat": 30.17128536741064,
+      "lon": 78.21443656682594,
+      "alt": 5037.054405296486,
+      "err_3d": 8057.331962844621,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 144.99999999999605,
+      "mode": "GNSS_ONLY",
+      "lat": 30.172382319005987,
+      "lon": 78.215909458601,
+      "alt": 5037.568035768788,
+      "err_3d": 8070.456834092752,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 145.999999999996,
+      "mode": "GNSS_ONLY",
+      "lat": 30.173480941311837,
+      "lon": 78.21738361591657,
+      "alt": 5038.081661521298,
+      "err_3d": 8083.14977056047,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 146.99999999999594,
+      "mode": "GNSS_ONLY",
+      "lat": 30.174582426455558,
+      "lon": 78.21885757274731,
+      "alt": 5038.597826245476,
+      "err_3d": 8095.556373738692,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 147.99999999999588,
+      "mode": "GNSS_ONLY",
+      "lat": 30.175686781743366,
+      "lon": 78.2203315905952,
+      "alt": 5039.116681363489,
+      "err_3d": 8107.765734902465,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 148.99999999999582,
+      "mode": "GNSS_ONLY",
+      "lat": 30.17679352522612,
+      "lon": 78.22180554168794,
+      "alt": 5039.637895362166,
+      "err_3d": 8119.821287516233,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 149.99999999999577,
+      "mode": "GNSS_ONLY",
+      "lat": 30.177903109169122,
+      "lon": 78.2232795633153,
+      "alt": 5040.163856196602,
+      "err_3d": 8131.679139499468,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 150.9999999999957,
+      "mode": "GNSS_ONLY",
+      "lat": 30.179015366551923,
+      "lon": 78.22475382835765,
+      "alt": 5040.6958121175785,
+      "err_3d": 8143.338031978919,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 151.99999999999565,
+      "mode": "GNSS_ONLY",
+      "lat": 30.180130432600482,
+      "lon": 78.22622825103494,
+      "alt": 5041.231748466278,
+      "err_3d": 8154.79342258943,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 152.9999999999956,
+      "mode": "GNSS_ONLY",
+      "lat": 30.18124797455043,
+      "lon": 78.22770289029697,
+      "alt": 5041.766476221661,
+      "err_3d": 8166.064598814697,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 153.99999999999554,
+      "mode": "GNSS_ONLY",
+      "lat": 30.182368217867687,
+      "lon": 78.22917771611323,
+      "alt": 5042.302999352491,
+      "err_3d": 8177.136417992252,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 154.99999999999548,
+      "mode": "GNSS_ONLY",
+      "lat": 30.183490438876017,
+      "lon": 78.23065281851616,
+      "alt": 5042.843114685887,
+      "err_3d": 8188.054847980328,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 155.99999999999542,
+      "mode": "GNSS_ONLY",
+      "lat": 30.18461545845654,
+      "lon": 78.23212831887312,
+      "alt": 5043.384164171213,
+      "err_3d": 8198.750103863498,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 156.99999999999537,
+      "mode": "GNSS_ONLY",
+      "lat": 30.185742877954624,
+      "lon": 78.23360385074987,
+      "alt": 5043.927062569865,
+      "err_3d": 8209.277254751503,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 157.9999999999953,
+      "mode": "GNSS_ONLY",
+      "lat": 30.186872513032412,
+      "lon": 78.23507984259321,
+      "alt": 5044.474958900571,
+      "err_3d": 8219.618403333257,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 158.99999999999525,
+      "mode": "GNSS_ONLY",
+      "lat": 30.188004503684024,
+      "lon": 78.23655609618598,
+      "alt": 5045.023985184625,
+      "err_3d": 8229.776917752604,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 159.9999999999952,
+      "mode": "GNSS_ONLY",
+      "lat": 30.189139176189425,
+      "lon": 78.23803267459587,
+      "alt": 5045.577737444189,
+      "err_3d": 8239.723524111825,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 160.99999999999514,
+      "mode": "GNSS_ONLY",
+      "lat": 30.190276173383868,
+      "lon": 78.23950987941379,
+      "alt": 5046.133866672687,
+      "err_3d": 8249.462404998223,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 161.99999999999508,
+      "mode": "GNSS_ONLY",
+      "lat": 30.191415212292483,
+      "lon": 78.24098727323104,
+      "alt": 5046.694532947569,
+      "err_3d": 8259.045434336342,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 162.99999999999503,
+      "mode": "GNSS_ONLY",
+      "lat": 30.19255665065851,
+      "lon": 78.24246531816934,
+      "alt": 5047.260000170679,
+      "err_3d": 8268.412453594276,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 163.99999999999497,
+      "mode": "GNSS_ONLY",
+      "lat": 30.193700401808915,
+      "lon": 78.24394390329877,
+      "alt": 5047.8292259118225,
+      "err_3d": 8277.577376439176,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 164.9999999999949,
+      "mode": "GNSS_ONLY",
+      "lat": 30.19484627126477,
+      "lon": 78.24542257601911,
+      "alt": 5048.406154862026,
+      "err_3d": 8286.586589368744,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 165.99999999999486,
+      "mode": "GNSS_ONLY",
+      "lat": 30.195994262732533,
+      "lon": 78.24690217362158,
+      "alt": 5048.984815924999,
+      "err_3d": 8295.379494252442,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 166.9999999999948,
+      "mode": "GNSS_ONLY",
+      "lat": 30.197144247822344,
+      "lon": 78.24838220203469,
+      "alt": 5049.562781141039,
+      "err_3d": 8304.000618061642,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 167.99999999999474,
+      "mode": "GNSS_ONLY",
+      "lat": 30.19829636312424,
+      "lon": 78.24986273158713,
+      "alt": 5050.143650027482,
+      "err_3d": 8312.43437432672,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 168.99999999999469,
+      "mode": "GNSS_ONLY",
+      "lat": 30.19945086872785,
+      "lon": 78.25134371882345,
+      "alt": 5050.724422955647,
+      "err_3d": 8320.664054502326,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "SUSPECTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 169.99999999999463,
+      "mode": "GNSS_ONLY",
+      "lat": 30.200606916086862,
+      "lon": 78.25282531848302,
+      "alt": 5051.309617011866,
+      "err_3d": 8328.741632596086,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 170.99999999999457,
+      "mode": "GNSS_ONLY",
+      "lat": 30.201764972866098,
+      "lon": 78.25430744487244,
+      "alt": 5051.89710993508,
+      "err_3d": 8336.637990763247,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 171.99999999999451,
+      "mode": "GNSS_ONLY",
+      "lat": 30.20292516887588,
+      "lon": 78.25579017563312,
+      "alt": 5052.4889662725045,
+      "err_3d": 8344.337556868122,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 172.99999999999446,
+      "mode": "GNSS_ONLY",
+      "lat": 30.204087206961624,
+      "lon": 78.2572735435053,
+      "alt": 5053.085318056878,
+      "err_3d": 8351.85993957263,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 173.9999999999944,
+      "mode": "GNSS_ONLY",
+      "lat": 30.205251127776325,
+      "lon": 78.25875764751316,
+      "alt": 5053.683426216422,
+      "err_3d": 8359.194788636158,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 174.99999999999434,
+      "mode": "GNSS_ONLY",
+      "lat": 30.2064165863971,
+      "lon": 78.26024207605967,
+      "alt": 5054.284203071029,
+      "err_3d": 8366.396969197738,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 175.9999999999943,
+      "mode": "GNSS_ONLY",
+      "lat": 30.207583889095815,
+      "lon": 78.26172718129779,
+      "alt": 5054.8919194628725,
+      "err_3d": 8373.418241690264,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 176.99999999999423,
+      "mode": "GNSS_ONLY",
+      "lat": 30.20875304142931,
+      "lon": 78.26321291906082,
+      "alt": 5055.502742738623,
+      "err_3d": 8380.261078902773,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 177.99999999999417,
+      "mode": "GNSS_ONLY",
+      "lat": 30.209924169234668,
+      "lon": 78.26469916757772,
+      "alt": 5056.117293218444,
+      "err_3d": 8386.924402566521,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 178.99999999999412,
+      "mode": "GNSS_ONLY",
+      "lat": 30.2110969722222,
+      "lon": 78.26618573536835,
+      "alt": 5056.737886703052,
+      "err_3d": 8393.444108226797,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 179.99999999999406,
+      "mode": "GNSS_ONLY",
+      "lat": 30.212271338258816,
+      "lon": 78.26767249956816,
+      "alt": 5057.360709269785,
+      "err_3d": 8399.837098015274,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 180.999999999994,
+      "mode": "GNSS_ONLY",
+      "lat": 30.21344755205862,
+      "lon": 78.26915980533842,
+      "alt": 5057.989427133187,
+      "err_3d": 8406.057255595506,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 181.99999999999395,
+      "mode": "GNSS_ONLY",
+      "lat": 30.214625168920172,
+      "lon": 78.27064730681364,
+      "alt": 5058.622135843719,
+      "err_3d": 8412.162352089903,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 182.9999999999939,
+      "mode": "FULL_AID",
+      "lat": 30.215804465465176,
+      "lon": 78.2721356118615,
+      "alt": 5059.259867561719,
+      "err_3d": 8418.088351780021,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 183.99999999999383,
+      "mode": "FULL_AID",
+      "lat": 30.21698530395095,
+      "lon": 78.27362389949822,
+      "alt": 5059.898697131158,
+      "err_3d": 8423.903481995405,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 184.99999999999378,
+      "mode": "FULL_AID",
+      "lat": 30.218167646265204,
+      "lon": 78.27511281498239,
+      "alt": 5060.541500225789,
+      "err_3d": 8429.564840258396,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 185.99999999999372,
+      "mode": "GNSS_ONLY",
+      "lat": 30.219333635202133,
+      "lon": 78.27659634683583,
+      "alt": 5061.188084047416,
+      "err_3d": 8236.162572767666,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 186.99999999999366,
+      "mode": "FULL_AID",
+      "lat": 30.22043684508531,
+      "lon": 78.27805863598789,
+      "alt": 5061.835551882206,
+      "err_3d": 7954.568695502926,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 187.9999999999936,
+      "mode": "FULL_AID",
+      "lat": 30.22147632084268,
+      "lon": 78.2794986840687,
+      "alt": 5062.483816382681,
+      "err_3d": 7683.148788573108,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 188.99999999999355,
+      "mode": "GNSS_ONLY",
+      "lat": 30.222453687912207,
+      "lon": 78.28091660221561,
+      "alt": 5063.133944819298,
+      "err_3d": 7421.927435600029,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 189.9999999999935,
+      "mode": "FULL_AID",
+      "lat": 30.22336993129714,
+      "lon": 78.28231329361692,
+      "alt": 5063.785564812165,
+      "err_3d": 7170.924149807418,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 190.99999999999343,
+      "mode": "GNSS_ONLY",
+      "lat": 30.22422686269784,
+      "lon": 78.28368937435677,
+      "alt": 5064.441102214563,
+      "err_3d": 6930.131190809669,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 191.99999999999338,
+      "mode": "FULL_AID",
+      "lat": 30.225025803491715,
+      "lon": 78.28504527772779,
+      "alt": 5065.1020873293455,
+      "err_3d": 6699.597556103022,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 192.99999999999332,
+      "mode": "FULL_AID",
+      "lat": 30.225767661420107,
+      "lon": 78.28638150596004,
+      "alt": 5065.76905762967,
+      "err_3d": 6479.3986532913705,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 193.99999999999326,
+      "mode": "FULL_AID",
+      "lat": 30.2264535274458,
+      "lon": 78.28769793836975,
+      "alt": 5066.442413913986,
+      "err_3d": 6269.652887568535,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 194.9999999999932,
+      "mode": "FULL_AID",
+      "lat": 30.22708521786757,
+      "lon": 78.28899572735408,
+      "alt": 5067.121822259204,
+      "err_3d": 6070.337670967914,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 195.99999999999315,
+      "mode": "FULL_AID",
+      "lat": 30.227663708291843,
+      "lon": 78.29027546830655,
+      "alt": 5067.803287390363,
+      "err_3d": 5881.524646995048,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 196.9999999999931,
+      "mode": "FULL_AID",
+      "lat": 30.22818992401131,
+      "lon": 78.29153663690414,
+      "alt": 5068.487594862372,
+      "err_3d": 5703.380620317896,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 197.99999999999304,
+      "mode": "GNSS_ONLY",
+      "lat": 30.22866564232875,
+      "lon": 78.29278014254253,
+      "alt": 5069.17929109978,
+      "err_3d": 5535.905470946012,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 198.99999999999298,
+      "mode": "FULL_AID",
+      "lat": 30.229091549539675,
+      "lon": 78.29400657827496,
+      "alt": 5069.872753763242,
+      "err_3d": 5379.167580776846,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 199.99999999999292,
+      "mode": "FULL_AID",
+      "lat": 30.229468893294985,
+      "lon": 78.29521597086585,
+      "alt": 5070.569244274094,
+      "err_3d": 5233.246474310168,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 200.99999999999287,
+      "mode": "FULL_AID",
+      "lat": 30.22979878062438,
+      "lon": 78.29640862587833,
+      "alt": 5071.27143952318,
+      "err_3d": 5098.185886035617,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 201.9999999999928,
+      "mode": "FULL_AID",
+      "lat": 30.230081752257714,
+      "lon": 78.29758537556607,
+      "alt": 5071.97688667938,
+      "err_3d": 4973.972465228855,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 202.99999999999275,
+      "mode": "FULL_AID",
+      "lat": 30.230319539935422,
+      "lon": 78.29874636181286,
+      "alt": 5072.683250773714,
+      "err_3d": 4860.591748512254,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 203.9999999999927,
+      "mode": "FULL_AID",
+      "lat": 30.2305129134218,
+      "lon": 78.29989197217544,
+      "alt": 5073.393778740431,
+      "err_3d": 4758.001805661893,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 204.99999999999264,
+      "mode": "FULL_AID",
+      "lat": 30.23066279906989,
+      "lon": 78.30102240889399,
+      "alt": 5074.110518585321,
+      "err_3d": 4666.132972907945,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 205.99999999999258,
+      "mode": "FULL_AID",
+      "lat": 30.230770305766143,
+      "lon": 78.30213810679163,
+      "alt": 5074.830903923431,
+      "err_3d": 4584.847779663305,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 206.99999999999253,
+      "mode": "GNSS_ONLY",
+      "lat": 30.230836298823633,
+      "lon": 78.3032390444707,
+      "alt": 5075.553840220067,
+      "err_3d": 4514.009735082484,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 207.99999999999247,
+      "mode": "FULL_AID",
+      "lat": 30.230861474784437,
+      "lon": 78.30422297726939,
+      "alt": 5076.279446550907,
+      "err_3d": 4463.263238236915,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 208.9999999999924,
+      "mode": "FULL_AID",
+      "lat": 30.230847456489755,
+      "lon": 78.30529806702806,
+      "alt": 5077.00743773634,
+      "err_3d": 4412.338178296798,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 209.99999999999235,
+      "mode": "FULL_AID",
+      "lat": 30.2307944881045,
+      "lon": 78.30635975140243,
+      "alt": 5077.743251698303,
+      "err_3d": 4371.004426390449,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 210.9999999999923,
+      "mode": "GNSS_ONLY",
+      "lat": 30.230703497353865,
+      "lon": 78.30740805302307,
+      "alt": 5078.482497588062,
+      "err_3d": 4338.9313123379015,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 211.99999999999224,
+      "mode": "FULL_AID",
+      "lat": 30.230575235007457,
+      "lon": 78.30844327013719,
+      "alt": 5079.222152731222,
+      "err_3d": 4315.7191239532885,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 212.99999999999218,
+      "mode": "FULL_AID",
+      "lat": 30.230410919494414,
+      "lon": 78.30946622139355,
+      "alt": 5079.960212620165,
+      "err_3d": 4300.895237392926,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 213.99999999999213,
+      "mode": "GNSS_ONLY",
+      "lat": 30.230211079015405,
+      "lon": 78.31047612699923,
+      "alt": 5080.695775749733,
+      "err_3d": 4294.095207567901,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 214.99999999999207,
+      "mode": "FULL_AID",
+      "lat": 30.229976792532135,
+      "lon": 78.31147421408406,
+      "alt": 5081.436275584171,
+      "err_3d": 4294.759519949602,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 215.999999999992,
+      "mode": "FULL_AID",
+      "lat": 30.229708272199208,
+      "lon": 78.31246004058565,
+      "alt": 5082.186039747807,
+      "err_3d": 4302.440716029088,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 216.99999999999196,
+      "mode": "FULL_AID",
+      "lat": 30.229406759183867,
+      "lon": 78.3134343084997,
+      "alt": 5082.938819440386,
+      "err_3d": 4316.614208477008,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 217.9999999999919,
+      "mode": "GNSS_ONLY",
+      "lat": 30.229072472273433,
+      "lon": 78.31439725381655,
+      "alt": 5083.696726618642,
+      "err_3d": 4336.758346779157,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 218.99999999999184,
+      "mode": "FULL_AID",
+      "lat": 30.22870640335333,
+      "lon": 78.31534877969622,
+      "alt": 5084.456551125166,
+      "err_3d": 4362.417201425117,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 219.9999999999918,
+      "mode": "FULL_AID",
+      "lat": 30.228309675728326,
+      "lon": 78.31628986478687,
+      "alt": 5085.222839350201,
+      "err_3d": 4393.064788933508,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 220.99999999999173,
+      "mode": "GNSS_ONLY",
+      "lat": 30.22788261159366,
+      "lon": 78.31722036078573,
+      "alt": 5085.992013312875,
+      "err_3d": 4428.248436577858,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 221.99999999999167,
+      "mode": "FULL_AID",
+      "lat": 30.227425879956147,
+      "lon": 78.31814052386545,
+      "alt": 5086.763382981998,
+      "err_3d": 4467.515734712179,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 222.99999999999162,
+      "mode": "FULL_AID",
+      "lat": 30.226940076572372,
+      "lon": 78.31905046550686,
+      "alt": 5087.535798336636,
+      "err_3d": 4510.443399695567,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 223.99999999999156,
+      "mode": "FULL_AID",
+      "lat": 30.226425818488472,
+      "lon": 78.31995049967124,
+      "alt": 5088.315213543815,
+      "err_3d": 4556.6165050329455,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 224.9999999999915,
+      "mode": "GNSS_ONLY",
+      "lat": 30.225883943986013,
+      "lon": 78.3208408649894,
+      "alt": 5089.103183900587,
+      "err_3d": 4605.666692270846,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 225.99999999999145,
+      "mode": "FULL_AID",
+      "lat": 30.225315082705677,
+      "lon": 78.3217222476697,
+      "alt": 5089.891979440803,
+      "err_3d": 4657.205690470794,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 226.9999999999914,
+      "mode": "FULL_AID",
+      "lat": 30.224719388628724,
+      "lon": 78.32259399910434,
+      "alt": 5090.685144410037,
+      "err_3d": 4710.936259096133,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 227.99999999999133,
+      "mode": "FULL_AID",
+      "lat": 30.224097608393784,
+      "lon": 78.3234566917415,
+      "alt": 5091.481446504995,
+      "err_3d": 4766.535200772574,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 228.99999999999127,
+      "mode": "FULL_AID",
+      "lat": 30.22345035018214,
+      "lon": 78.32431088813814,
+      "alt": 5092.284226675841,
+      "err_3d": 4823.698017998451,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 229.99999999999122,
+      "mode": "FULL_AID",
+      "lat": 30.222778160316235,
+      "lon": 78.32515614476776,
+      "alt": 5093.091934063456,
+      "err_3d": 4882.209995448514,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 230.99999999999116,
+      "mode": "FULL_AID",
+      "lat": 30.222081354616176,
+      "lon": 78.3259930931486,
+      "alt": 5093.900212766892,
+      "err_3d": 4941.785337566314,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 231.9999999999911,
+      "mode": "GNSS_ONLY",
+      "lat": 30.22136088314717,
+      "lon": 78.32682127710908,
+      "alt": 5094.7079766944335,
+      "err_3d": 5002.283699986007,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 232.99999999999105,
+      "mode": "FULL_AID",
+      "lat": 30.220617263397376,
+      "lon": 78.32764165735774,
+      "alt": 5095.522524201153,
+      "err_3d": 5063.457863901145,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 233.999999999991,
+      "mode": "GNSS_ONLY",
+      "lat": 30.219850755249936,
+      "lon": 78.32845420010422,
+      "alt": 5096.342726331972,
+      "err_3d": 5125.123601904997,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 234.99999999999093,
+      "mode": "GNSS_ONLY",
+      "lat": 30.219062316306925,
+      "lon": 78.32925865848972,
+      "alt": 5097.1652379660945,
+      "err_3d": 5187.184954784147,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 235.99999999999088,
+      "mode": "GNSS_ONLY",
+      "lat": 30.218252042993583,
+      "lon": 78.33005597596109,
+      "alt": 5097.981351753799,
+      "err_3d": 5249.416257617323,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 236.99999999999082,
+      "mode": "FULL_AID",
+      "lat": 30.21742062801165,
+      "lon": 78.33084490434332,
+      "alt": 5098.795223293836,
+      "err_3d": 5311.789294205665,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 237.99999999999076,
+      "mode": "GNSS_ONLY",
+      "lat": 30.216568503092635,
+      "lon": 78.33162694244776,
+      "alt": 5099.613605063217,
+      "err_3d": 5374.10402934837,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 238.9999999999907,
+      "mode": "FULL_AID",
+      "lat": 30.21569616705675,
+      "lon": 78.33240173886472,
+      "alt": 5100.436755412881,
+      "err_3d": 5436.288787503774,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 239.99999999999065,
+      "mode": "GNSS_ONLY",
+      "lat": 30.214804169749492,
+      "lon": 78.33316958741324,
+      "alt": 5101.263394168292,
+      "err_3d": 5498.250876254929,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 240.9999999999906,
+      "mode": "GNSS_ONLY",
+      "lat": 30.213892886756714,
+      "lon": 78.33393053388242,
+      "alt": 5102.092109856308,
+      "err_3d": 5559.906543357744,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 241.99999999999054,
+      "mode": "GNSS_ONLY",
+      "lat": 30.212962262624487,
+      "lon": 78.33468475482613,
+      "alt": 5102.922175281082,
+      "err_3d": 5621.134179083791,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 242.99999999999048,
+      "mode": "FULL_AID",
+      "lat": 30.212013604442784,
+      "lon": 78.33543270518577,
+      "alt": 5103.753174268087,
+      "err_3d": 5681.93381845069,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 243.99999999999042,
+      "mode": "FULL_AID",
+      "lat": 30.211046961037663,
+      "lon": 78.33617433480387,
+      "alt": 5104.5883923218835,
+      "err_3d": 5742.223895814579,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 244.99999999999037,
+      "mode": "FULL_AID",
+      "lat": 30.210062571816664,
+      "lon": 78.3369096852833,
+      "alt": 5105.429552193214,
+      "err_3d": 5801.942271015775,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 245.9999999999903,
+      "mode": "GNSS_ONLY",
+      "lat": 30.20906077251818,
+      "lon": 78.33763906216916,
+      "alt": 5106.275928318446,
+      "err_3d": 5861.029438788283,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 246.99999999999025,
+      "mode": "FULL_AID",
+      "lat": 30.208042397618,
+      "lon": 78.33836237950644,
+      "alt": 5107.126842333955,
+      "err_3d": 5919.4996869436945,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 247.9999999999902,
+      "mode": "FULL_AID",
+      "lat": 30.207007705996435,
+      "lon": 78.3390800605152,
+      "alt": 5107.982365234,
+      "err_3d": 5977.2936014007355,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 248.99999999999014,
+      "mode": "FULL_AID",
+      "lat": 30.20595691922011,
+      "lon": 78.33979232341909,
+      "alt": 5108.841964051752,
+      "err_3d": 6034.363605929751,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 249.99999999999008,
+      "mode": "FULL_AID",
+      "lat": 30.204890380405,
+      "lon": 78.34049920451625,
+      "alt": 5109.707284588242,
+      "err_3d": 6090.687156842381,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 250.99999999999002,
+      "mode": "GNSS_ONLY",
+      "lat": 30.203808268021792,
+      "lon": 78.34120075642743,
+      "alt": 5110.574497676659,
+      "err_3d": 6146.2288949840495,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 251.99999999998997,
+      "mode": "FULL_AID",
+      "lat": 30.20271122792794,
+      "lon": 78.34189698746871,
+      "alt": 5111.444943449087,
+      "err_3d": 6201.005343069965,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 252.9999999999899,
+      "mode": "FULL_AID",
+      "lat": 30.20159911139387,
+      "lon": 78.3425880530381,
+      "alt": 5112.315925813666,
+      "err_3d": 6254.9515696393655,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 253.99999999998985,
+      "mode": "FULL_AID",
+      "lat": 30.200472841008914,
+      "lon": 78.34327429177247,
+      "alt": 5113.190542838535,
+      "err_3d": 6308.104777686107,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 254.9999999999898,
+      "mode": "FULL_AID",
+      "lat": 30.199332429549937,
+      "lon": 78.3439558415738,
+      "alt": 5114.065598426213,
+      "err_3d": 6360.42397764053,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 255.99999999998974,
+      "mode": "FULL_AID",
+      "lat": 30.198178184027878,
+      "lon": 78.34463259788829,
+      "alt": 5114.942511532827,
+      "err_3d": 6411.910270760518,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 256.99999999998994,
+      "mode": "FULL_AID",
+      "lat": 30.197010438802945,
+      "lon": 78.34530473419673,
+      "alt": 5115.820915141186,
+      "err_3d": 6462.558411737501,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 257.99999999999017,
+      "mode": "FULL_AID",
+      "lat": 30.19582957223918,
+      "lon": 78.3459723409918,
+      "alt": 5116.702070159465,
+      "err_3d": 6512.373603367991,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 258.9999999999904,
+      "mode": "FULL_AID",
+      "lat": 30.19463592790841,
+      "lon": 78.34663595409904,
+      "alt": 5117.589323468673,
+      "err_3d": 6561.342356142555,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 259.9999999999906,
+      "mode": "FULL_AID",
+      "lat": 30.19342959184031,
+      "lon": 78.3472952667959,
+      "alt": 5118.475861008013,
+      "err_3d": 6609.460685500957,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 260.99999999999085,
+      "mode": "FULL_AID",
+      "lat": 30.192210920470714,
+      "lon": 78.34795025453126,
+      "alt": 5119.364131247028,
+      "err_3d": 6656.742247211217,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 261.9999999999911,
+      "mode": "FULL_AID",
+      "lat": 30.190980211276255,
+      "lon": 78.34860143724494,
+      "alt": 5120.255083340835,
+      "err_3d": 6703.175755689783,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 262.9999999999913,
+      "mode": "FULL_AID",
+      "lat": 30.189737706576675,
+      "lon": 78.34924914449802,
+      "alt": 5121.147814056295,
+      "err_3d": 6748.753874090646,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 263.99999999999153,
+      "mode": "FULL_AID",
+      "lat": 30.188483793856427,
+      "lon": 78.34989279362058,
+      "alt": 5122.041409339233,
+      "err_3d": 6793.519605535476,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 264.99999999999176,
+      "mode": "FULL_AID",
+      "lat": 30.187218421216848,
+      "lon": 78.35053281871025,
+      "alt": 5122.933818747881,
+      "err_3d": 6837.434003695026,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 265.999999999992,
+      "mode": "FULL_AID",
+      "lat": 30.185942132629982,
+      "lon": 78.3511693031128,
+      "alt": 5123.829601769276,
+      "err_3d": 6880.5339259126795,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 266.9999999999922,
+      "mode": "GNSS_ONLY",
+      "lat": 30.18465513187353,
+      "lon": 78.35180245640825,
+      "alt": 5124.730067916893,
+      "err_3d": 6922.817969650812,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 267.99999999999244,
+      "mode": "GNSS_ONLY",
+      "lat": 30.183357572025088,
+      "lon": 78.35243210058952,
+      "alt": 5125.628209533436,
+      "err_3d": 6964.294274982117,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 268.99999999999267,
+      "mode": "FULL_AID",
+      "lat": 30.18204982823993,
+      "lon": 78.3530587747347,
+      "alt": 5126.52924129922,
+      "err_3d": 7004.9698374524705,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    },
+    {
+      "time": 269.9999999999929,
+      "mode": "FULL_AID",
+      "lat": 30.180732204890777,
+      "lon": 78.35368203925604,
+      "alt": 5127.433422050749,
+      "err_3d": 7044.879437086481,
+      "fdi": {
+        "gnss": "ACCEPTED",
+        "radar": "ACCEPTED",
+        "mag": "ACCEPTED"
+      }
+    }
+  ]
+}

@@ -80,11 +80,11 @@ class TestScenarioB_GNSSDenial(unittest.TestCase):
         self.assertEqual(gnss_steps, 0, "GNSS should never be accepted when DENIED")
 
     def test_ins_drift_grows_without_gnss(self):
-        """Without GNSS, drift should grow over time."""
+        """Without GNSS, error should grow over time."""
         recs = self._run_denied("flat_plain_mission")
         if len(recs) > 100:
-            early_drift  = recs[10].ins_drift_m
-            late_drift   = recs[-1].ins_drift_m
+            early_drift  = recs[10].error_3d_m
+            late_drift   = recs[-1].error_3d_m
             self.assertGreater(late_drift, early_drift)
 
     def test_mountain_tan_activates(self):

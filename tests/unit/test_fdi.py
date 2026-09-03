@@ -96,13 +96,16 @@ class TestFDIGNSS(unittest.TestCase):
         self.assertNotEqual(self.fdi.gnss.validity, SensorValidity.ACCEPTED)
 
     def test_innovation_jump(self):
-        """Large jump from INS position should flag as fault."""
+        """Large jump between consecutive GNSS readings should flag as fault."""
+        # First reading — accepted, establishes baseline lat/lon
+        self.fdi.check_gnss(_gnss_meas(lat=30.0, lon=78.0))
+        # Now feed a teleport (>500m per step) for persist_steps+
         for i in range(5):
             self.fdi.check_gnss(
-                _gnss_meas(lat=35.0, lon=85.0),  # far from INS at (30,78)
-                ins_lat=30.0, ins_lon=78.0, ins_alt=5000.0,
+                _gnss_meas(lat=35.0, lon=85.0),  # >500 km jump from first reading
             )
         self.assertNotEqual(self.fdi.gnss.validity, SensorValidity.ACCEPTED)
+
 
 
 class TestFDIMagnetometer(unittest.TestCase):

@@ -183,6 +183,7 @@ class NavigationEngine:
         self._fdi    = FaultDetectionIsolation(persist_steps=3, recovery_steps=5)
         self._ekf    = NavigationEKF(q_pos_deg=1e-7, q_vel=0.02, q_att=1e-4)
         self._magnav = MagNavEstimator(history_len=50)
+        self._total_drift_m = 0.0   # cumulative drift (not reset by EKF correction)
 
         records: List[NavigationRecord] = []
 
@@ -218,6 +219,10 @@ class NavigationEngine:
             dt = 0.1  # 10 Hz fixed
             self._ins.propagate(imu_row, mission_index=mi)
             ins_state = self._ins.state
+            # Accumulate drift since start (not reset by position correction)
+            self._total_drift_m += math.sqrt(
+                ins_state.vel_north**2 + ins_state.vel_east**2
+            ) * dt
 
             # ── 2. EKF predict ────────────────────────────────────────────────
             self._ekf.predict(dt=dt)
@@ -303,13 +308,17 @@ class NavigationEngine:
                 )
                 mag_used = True
 
-            # ── 7. Apply EKF correction to INS ────────────────────────────────
+            # ── 7. Apply EKF correction to INS (only when meaningful) ──────────
             corr_lat, corr_lon, corr_alt = self._ekf.apply_correction_to_ins(
                 ins_state.latitude,
                 ins_state.longitude,
                 ins_state.altitude,
             )
-            self._ins.reset_position(corr_lat, corr_lon, corr_alt)
+            # Only reset INS position if correction is significant (>1 cm)
+            # to preserve drift accumulation in INS-only mode
+            corr_dist = abs(corr_lat - ins_state.latitude) * self._M_PER_DEG
+            if corr_dist > 0.01 or abs(corr_alt - ins_state.altitude) > 0.01:
+                self._ins.reset_position(corr_lat, corr_lon, corr_alt)
 
             # ── 8. Determine navigation mode ──────────────────────────────────
             nav_mode = self._nav_mode(gnss_used, tan_used, mag_used)
@@ -361,7 +370,7 @@ class NavigationEngine:
                 error_lat_m      = e_lat,
                 error_lon_m      = e_lon,
                 error_3d_m       = e_3d,
-                ins_drift_m      = ins_state.pos_drift_m,
+                ins_drift_m      = self._total_drift_m,
             )
             records.append(rec)
 
@@ -388,6 +397,70 @@ class NavigationEngine:
                 row = asdict(rec)
                 writer.writerow(row)
         logger.info("Saved %d records → %s", len(records), output_path)
+
+    @staticmethod
+    def export_metrics(records: List[NavigationRecord], output_path: str) -> dict:
+        """Export summary metrics and diagnostic logs for the frontend as JSON."""
+        if not records:
+            return {}
+        
+        n_steps = len(records)
+        gnss_valid = sum(1 for r in records if r.gnss_accepted)
+        radar_valid = sum(1 for r in records if r.radar_accepted)
+        mag_valid = sum(1 for r in records if r.mag_accepted)
+        tan_valid = sum(1 for r in records if r.tan_valid)
+
+        modes = {}
+        for r in records:
+            modes[r.nav_mode] = modes.get(r.nav_mode, 0) + 1
+            
+        valid_errs = [r.error_3d_m for r in records if math.isfinite(r.error_3d_m)]
+        mean_err = sum(valid_errs) / len(valid_errs) if valid_errs else 0.0
+        max_err = max(valid_errs) if valid_errs else 0.0
+        final_err = records[-1].error_3d_m if math.isfinite(records[-1].error_3d_m) else 0.0
+        final_drift = records[-1].ins_drift_m
+
+        metrics = {
+            "summary": {
+                "total_duration_s": n_steps * 0.1,
+                "sensor_availability_percent": {
+                    "gnss": (gnss_valid / n_steps) * 100.0,
+                    "radar": (radar_valid / n_steps) * 100.0,
+                    "magnetometer": (mag_valid / n_steps) * 100.0,
+                    "tan": (tan_valid / n_steps) * 100.0
+                },
+                "navigation_modes_percent": {k: (v / n_steps) * 100.0 for k, v in modes.items()},
+                "performance_m": {
+                    "mean_3d_error": mean_err,
+                    "max_3d_error": max_err,
+                    "final_3d_error": final_err,
+                    "cumulative_ins_drift": final_drift
+                }
+            },
+            "diagnostics": [
+                {
+                    "time": r.timestamp,
+                    "mode": r.nav_mode,
+                    "lat": r.estimated_lat,
+                    "lon": r.estimated_lon,
+                    "alt": r.estimated_alt,
+                    "err_3d": r.error_3d_m if math.isfinite(r.error_3d_m) else None,
+                    "fdi": {
+                        "gnss": r.fdi_gnss,
+                        "radar": r.fdi_radar,
+                        "mag": r.fdi_mag
+                    }
+                }
+                for i, r in enumerate(records) if i % 10 == 0  # downsample to 1 Hz for frontend
+            ]
+        }
+        
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        with open(output_path, "w") as f:
+            json.dump(metrics, f, indent=2)
+            
+        logger.info("Exported JSON metrics → %s", output_path)
+        return metrics
 
     # ── private helpers ───────────────────────────────────────────────────────
 

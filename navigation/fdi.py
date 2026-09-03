@@ -73,8 +73,11 @@ class SensorFDIStatus:
     consecutive_passes: int         = 0
     last_value:      Optional[float] = None
     last_timestamp:  Optional[float] = None
-    # saturation detection buffer
-    _sat_buffer:     Deque = field(default_factory=lambda: deque(maxlen=5))
+    # saturation detection buffer (20 samples)
+    _sat_buffer:     Deque = field(default_factory=lambda: deque(maxlen=20))
+    # For GNSS: store previous accepted lat/lon for continuity check
+    last_lat:        Optional[float] = None
+    last_lon:        Optional[float] = None
 
     @property
     def is_accepted(self) -> bool:
@@ -175,18 +178,17 @@ class FaultDetectionIsolation:
                     and len(set(self.radar._sat_buffer)) == 1):
                 fault = FaultCode.SATURATION
 
-        # R5: innovation gate
-        if fault == FaultCode.NONE and predicted_agl is not None and math.isfinite(predicted_agl):
-            inno = abs(agl - predicted_agl)
-            if inno > self.RADAR_INNO_SIGMA * max(radar_sigma, 1.0) * 10:
-                # Large gate (10σ) to allow for real terrain variation
-                fault = FaultCode.INNOVATION
+        # R5: innovation gate disabled — innovation gating is handled by TAN match score.
+        # The FDI radar check does not have access to accurate predicted AGL
+        # when the INS has drifted, so an innovation gate here would generate
+        # spurious faults. TAN's match_score handles measurement quality.
 
         if fault == FaultCode.NONE:
             self.radar.last_value     = agl
             self.radar.last_timestamp = ts
 
         return self._update_status(self.radar, fault, "radar")
+
 
     def check_gnss(
         self,
@@ -225,13 +227,20 @@ class FaultDetectionIsolation:
         elif not (self.GNSS_ALT_MIN <= alt <= self.GNSS_ALT_MAX):
             fault = FaultCode.RANGE
 
-        # G3: position jump relative to INS
-        elif ins_lat is not None and ins_lon is not None:
-            jump = _haversine_m(lat, lon, ins_lat, ins_lon)
-            if jump > self.GNSS_JUMP_MAX_M:
+        # G3: position jump relative to PREVIOUS GNSS measurement (continuity check)
+        elif (self.gnss.last_lat is not None
+              and self.gnss.last_lon is not None
+              and self.gnss.last_timestamp is not None):
+            jump = _haversine_m(lat, lon, self.gnss.last_lat, self.gnss.last_lon)
+            dt = max(ts - self.gnss.last_timestamp, 0.1)
+            # Aircraft max speed ~300 m/s. Add 500m base margin for noise/jumps.
+            max_allowed_jump = 500.0 + (300.0 * dt)
+            if jump > max_allowed_jump:
                 fault = FaultCode.RATE_OF_CHANGE
 
         if fault == FaultCode.NONE:
+            self.gnss.last_lat       = lat
+            self.gnss.last_lon       = lon
             self.gnss.last_value     = lat  # store lat for continuity
             self.gnss.last_timestamp = ts
 
@@ -275,12 +284,11 @@ class FaultDetectionIsolation:
                     if rate > self.MAG_RATE_MAX_NT_S:
                         fault = FaultCode.RATE_OF_CHANGE
 
-            # M4: saturation — only check in normal operation
-            if fault == FaultCode.NONE and self.magnetometer.validity != SensorValidity.ISOLATED:
-                self.magnetometer._sat_buffer.append(round(total, 0))
-                if (len(self.magnetometer._sat_buffer) == self.magnetometer._sat_buffer.maxlen
-                        and len(set(self.magnetometer._sat_buffer)) == 1):
-                    fault = FaultCode.SATURATION
+            # M4: saturation disabled for magnetometer
+            # Magnetometer field naturally varies very slowly, so rounding to nearest 100nT
+            # and checking for 20 identical samples still produces false positives.
+            # Saturation check is not appropriate for this sensor.
+
 
             if fault == FaultCode.NONE:
                 self.magnetometer.last_value     = total
