@@ -30,9 +30,10 @@ export interface DroneState {
   ekfLon: number;
   
   errorEkf: number;
+  activeAid: string;
 }
 
-export function generateMissionData(waypoints: Waypoint[], durationSec: number = 200, fps: number = 10): DroneState[] {
+export function generateMissionData(waypoints: Waypoint[], durationSec: number = 200, fps: number = 10, missionId: string = 'mountain'): DroneState[] {
   const data: DroneState[] = [];
   const totalFrames = durationSec * fps;
   
@@ -58,69 +59,93 @@ export function generateMissionData(waypoints: Waypoint[], durationSec: number =
     const hdg = Math.atan2(wpB.lon - wpA.lon, wpB.lat - wpA.lat) * (180 / Math.PI);
     
     let gnssStatus: 'AVAILABLE' | 'DENIED' = 'AVAILABLE';
-    let navMode = 'FULL_AID';
+    let navMode = 'GNSS AID';
     let fdiGnss: 'ACCEPTED' | 'ISOLATED' = 'ACCEPTED';
     let radarStatus: 'ACTIVE' | 'FAULT' | 'ISOLATED' | 'RECOVERED' = 'ACTIVE';
     let fdiRadar: 'ACCEPTED' | 'SUSPECTED' | 'ISOLATED' = 'ACCEPTED';
+    let activeAid = 'NONE';
+
     
     let insDrift = 0;
     let errorEkf = 0;
     
     // INS Drift logic
-    if (t >= 10 && t < 180) {
-      gnssStatus = 'DENIED';
-      fdiGnss = 'ISOLATED';
-      navMode = 'INS_ONLY';
-      
-      const driftT = t - 10;
-      insDrift = 0.5 * (driftT * driftT);
+    if (t >= 10) {
+      if (t < 180) {
+        gnssStatus = 'DENIED';
+        fdiGnss = 'ISOLATED';
+        navMode = 'INS ONLY';
+        
+        const driftT = t - 10;
+        insDrift = 0.5 * (driftT * driftT);
+      } else {
+        const maxDrift = 0.5 * (170 * 170);
+        const recoverT = t - 180;
+        insDrift = maxDrift * Math.exp(-recoverT * 0.02);
+      }
     }
+    
+    // Mission-dependent base metrics
+    let baseObs = 40;
+    let baseMatch = 80;
+    let minErr = 0.1;
+    if (missionId === 'flat_plain') { baseObs = 2; baseMatch = 10; minErr = 0.7; }
+    else if (missionId === 'desert') { baseObs = 15; baseMatch = 30; minErr = 0.4; }
+    else if (missionId === 'western_ghats') { baseObs = 30; baseMatch = 60; minErr = 0.2; }
     
     let tanMatchScore = 0;
     let terrainObs = 0;
     
     if (t >= 55) {
-      terrainObs = 40 + Math.sin(t) * 10;
+      terrainObs = baseObs + Math.sin(t) * (baseObs * 0.1);
     }
     
     if (t >= 55 && t < 75) {
-      tanMatchScore = ((t - 55) / 20) * 80; 
+      navMode = 'TAN SEARCHING';
+      tanMatchScore = ((t - 55) / 20) * baseMatch; 
     }
     
     let ekfOffsetRatio = 1.0; 
     
     if (t >= 75 && t < 120) { 
-      navMode = 'TAN_AID';
-      tanMatchScore = 80 + Math.random() * 5; 
+      navMode = 'TAN AID';
+      activeAid = 'TAN';
+      tanMatchScore = baseMatch + Math.random() * 5; 
       
-      ekfOffsetRatio = 1.0 - ((t - 75) / 25);
-      if (ekfOffsetRatio < 0.1) ekfOffsetRatio = 0.1;
+      ekfOffsetRatio = 1.0 - ((t - 75) / 25) * (1.0 - minErr);
+      if (ekfOffsetRatio < minErr) ekfOffsetRatio = minErr;
     }
     
     if (t >= 100 && t < 120) {
-      ekfOffsetRatio = 0.1;
+      ekfOffsetRatio = minErr;
     }
     
-    if (t >= 120 && t < 160) {
+    // RADAR FAULT / MAGNAV FAILOVER
+    if (t >= 120) {
       radarStatus = 'FAULT';
       fdiRadar = t >= 140 ? 'ISOLATED' : 'SUSPECTED';
-      navMode = 'INS_ONLY';
-      ekfOffsetRatio = 0.1 + ((t - 120) / 40) * 0.5;
-    }
-    
-    if (t >= 160 && t < 180) {
-      radarStatus = 'RECOVERED';
-      fdiRadar = 'ACCEPTED';
-      navMode = 'TAN_AID';
-      ekfOffsetRatio = 0.6 - ((t - 160) / 20) * 0.5;
-    }
-    
-    if (t >= 180) {
-      gnssStatus = 'AVAILABLE';
-      fdiGnss = 'ACCEPTED';
-      navMode = 'FULL_AID';
-      ekfOffsetRatio = 0.05;
-      insDrift = insDrift * 0.9; 
+      
+      if (t < 145) {
+        navMode = 'INS ONLY / EVALUATING AIDS';
+        activeAid = 'NONE / DEGRADED';
+        ekfOffsetRatio = minErr + ((t - 120) / 25) * 0.3; // Diverging away from white
+      } else if (t < 150) {
+        navMode = 'MAGNAV EVALUATING';
+        activeAid = 'NONE / DEGRADED';
+        ekfOffsetRatio = minErr + 0.3 + ((t - 145) / 5) * 0.2; // Still diverging
+      } else if (t < 155) {
+        navMode = 'MAGNAV ACQUIRED';
+        activeAid = 'MAGNAV';
+        
+        // MagNav binds the error
+        const peakErr = minErr + 0.5; // reaches this peak at 150
+        const magnavPull = Math.min(((t - 150) / 5) * 0.2, 0.2); // Pull back by 0.2
+        ekfOffsetRatio = peakErr - magnavPull; // smooth convergence toward white
+      } else {
+        navMode = 'MAGNAV AID';
+        activeAid = 'MAGNAV';
+        ekfOffsetRatio = minErr + 0.3; // Stabilized and continues using MagNav
+      }
     }
     
     const maxDriftLat = (insDrift / 111000) * Math.sin(t * 0.05); 
@@ -160,7 +185,8 @@ export function generateMissionData(waypoints: Waypoint[], durationSec: number =
       insLon,
       ekfLat,
       ekfLon,
-      errorEkf
+      errorEkf,
+      activeAid
     });
   }
   

@@ -39,8 +39,11 @@ export const CesiumMap: React.FC<CesiumMapProps> = ({ data, currentTimeIndex, on
     }
 
     if (!containerRef.current || viewerRef.current) return;
+    
+    let isMounted = true;
 
     try {
+
       const viewer = new Cesium.Viewer(containerRef.current, {
         animation: false,
         timeline: false,
@@ -55,7 +58,9 @@ export const CesiumMap: React.FC<CesiumMapProps> = ({ data, currentTimeIndex, on
       });
 
       Cesium.createWorldTerrainAsync().then(tp => {
-         viewer.terrainProvider = tp;
+         if (isMounted && viewerRef.current && !viewerRef.current.isDestroyed()) {
+             viewer.terrainProvider = tp;
+         }
       }).catch(e => console.error(e));
 
 
@@ -151,7 +156,7 @@ export const CesiumMap: React.FC<CesiumMapProps> = ({ data, currentTimeIndex, on
         position: Cesium.Cartesian3.fromDegrees(0, 0, 0),
         billboard: {
           image: svgIconURI,
-          scale: 1.5,
+          scale: 2.0,
           horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
           verticalOrigin: Cesium.VerticalOrigin.CENTER,
           rotation: 0 
@@ -166,6 +171,7 @@ export const CesiumMap: React.FC<CesiumMapProps> = ({ data, currentTimeIndex, on
     }
     
     return () => {
+      isMounted = false;
       if (viewerRef.current) {
         viewerRef.current.destroy();
         viewerRef.current = null;
@@ -197,7 +203,7 @@ export const CesiumMap: React.FC<CesiumMapProps> = ({ data, currentTimeIndex, on
     // Using ConstantProperty to ensure it doesn't jump
     const ENHANCED_OBLIQUE_OFFSET = new Cesium.Cartesian3(0.0, -1000.0, 1500.0);
     
-    if (viewer.trackedEntity !== aircraftRef.current) {
+    if (viewer.trackedEntity !== aircraftRef.current && aircraftRef.current) {
         viewer.trackedEntity = aircraftRef.current;
         aircraftRef.current.viewFrom = new Cesium.ConstantProperty(ENHANCED_OBLIQUE_OFFSET);
     }

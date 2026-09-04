@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useMemo, useRef } from 'react';
-import { Play, Pause, RotateCcw, Home, Activity, Target, AlignLeft, Settings, Mountain, ShieldAlert, ChevronRight } from 'lucide-react';
+import React, { useEffect, useState, useMemo } from 'react';
+import { Play, Pause, RotateCcw, Home, Activity, Target, AlignLeft, Mountain, ShieldAlert, ChevronRight } from 'lucide-react';
 import { missions } from '../demo/missions';
 import { generateMissionData } from '../demo/demoReplay';
 import Map3D from './Map3D';
@@ -11,24 +11,25 @@ const planeSvgPath = "M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l
 export const Dashboard: React.FC = () => {
   const [activeMissionId, setActiveMissionId] = useState('mountain');
   const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackSpeed, setPlaybackSpeed] = useState(2);
   const [currentTimeIndex, setCurrentTimeIndex] = useState(0);
   const [activeTab, setActiveTab] = useState('OVERVIEW');
-  const [cesiumCrashed, setCesiumCrashed] = useState(false);
+
 
   const mission = missions[activeMissionId];
-  const missionData = useMemo(() => generateMissionData(mission.waypoints, 200, 10), [mission]);
+  const missionData = useMemo(() => generateMissionData(mission.waypoints, 180, 10, mission.id), [mission]);
 
   useEffect(() => {
     let interval: number;
     if (isPlaying && currentTimeIndex < missionData.length - 1) {
       interval = window.setInterval(() => {
         setCurrentTimeIndex(t => Math.min(t + 1, missionData.length - 1));
-      }, 50); // fast playback
+      }, 100 / playbackSpeed); 
     } else if (currentTimeIndex >= missionData.length - 1) {
       setIsPlaying(false);
     }
     return () => window.clearInterval(interval);
-  }, [isPlaying, currentTimeIndex, missionData.length]);
+  }, [isPlaying, currentTimeIndex, missionData.length, playbackSpeed]);
 
   const state = missionData[currentTimeIndex];
 
@@ -80,7 +81,6 @@ export const Dashboard: React.FC = () => {
                  setActiveMissionId(e.target.value);
                  setCurrentTimeIndex(0);
                  setIsPlaying(false);
-                 setCesiumCrashed(false);
                }}
              >
                {Object.keys(missions).map(k => <option className="bg-slate-900" key={k} value={k}>{missions[k].name.toUpperCase()}</option>)}
@@ -91,7 +91,7 @@ export const Dashboard: React.FC = () => {
 
           <div className="flex flex-col gap-1">
              <span className="text-[10px] text-gray-400 tracking-widest">SCENARIO</span>
-             <span className="text-[#ef4444] font-bold text-sm tracking-wider">GNSS DENIED</span>
+             <span className={`font-bold text-sm tracking-wider ${state.gnssStatus === 'DENIED' ? 'text-[#ef4444]' : 'text-[#4ade80]'}`}>GNSS {state.gnssStatus}</span>
           </div>
           
           <div className="w-px h-10 bg-[#2a2d36]"></div>
@@ -108,6 +108,21 @@ export const Dashboard: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 max-w-sm w-full mx-4">
+              <span className="text-[10px] text-gray-400 font-mono">0s</span>
+              <input 
+                 type="range" 
+                 min="0" 
+                 max={missionData.length - 1} 
+                 value={currentTimeIndex} 
+                 onChange={(e) => setCurrentTimeIndex(parseInt(e.target.value, 10))}
+                 className="w-48 h-1 bg-[#2a2d36] rounded-lg appearance-none cursor-pointer accent-[#4ade80]"
+              />
+              <span className="text-[10px] text-gray-400 font-mono">180s</span>
+          </div>
+          <button onClick={() => setPlaybackSpeed(s => s === 1 ? 2 : s === 2 ? 4 : s === 4 ? 8 : 1)} className="hover:bg-gray-800 transition-colors px-4 py-2 rounded-[4px] border border-[#2a2d36] flex items-center gap-2 text-[11px] font-bold text-[#d1d5db]">
+            {playbackSpeed}x SPEED
+          </button>
           <button onClick={() => setIsPlaying(!isPlaying)} className="hover:bg-gray-800 transition-colors px-4 py-2 rounded-[4px] border border-[#2a2d36] flex items-center gap-2 text-[11px] font-bold tracking-widest text-[#d1d5db]">
             {isPlaying ? <><Pause size={14} /> PAUSE</> : <><Play size={14} /> PLAY</>}
           </button>
@@ -260,7 +275,9 @@ export const Dashboard: React.FC = () => {
           <div className="absolute bottom-6 left-6 border border-gray-600/50 bg-black/60 p-2 font-mono text-[10px] z-10 rounded-[4px] w-40 text-gray-300 pointer-events-none">
               <div className="mb-2">
                  <div className="text-gray-500 uppercase tracking-widest leading-tight">NAV MODE</div>
-                 <div className="text-[#a3e635] text-xs font-bold leading-none">{state.navMode.replace('_', ' ')}</div>
+                 <div className="text-[#a3e635] text-xs font-bold leading-none">
+                    {state.navMode}
+                 </div>
               </div>
               <div className="border-t border-gray-700 pt-1">
                  <div className="text-gray-400 capitalize tracking-wide mb-1">POS UNCERTAINTY (1σ)</div>
@@ -274,6 +291,7 @@ export const Dashboard: React.FC = () => {
         {/* Right: 45% Tactical Mission Map */}
         <div className="flex-1 w-[45%] relative bg-[#0c1015] shrink-0 border-l px-[4px] py-[4px] border-[#2a2d36] overflow-hidden">
              <CesiumMap 
+                key={activeMissionId}
                 data={missionData} 
                 currentTimeIndex={currentTimeIndex} 
                 onError={() => {}} 
@@ -286,10 +304,10 @@ export const Dashboard: React.FC = () => {
                      <span className="w-6 border-t-[2px] border-dashed border-white"></span> REFERENCE PATH (TRUTH)
                  </div>
                  <div className="flex items-center gap-3 mb-2 text-white">
-                     <span className="w-6 border-t-[2px] border-dashed border-[#d946ef]"></span> INS (DEAD RECKONING)
+                     <span className="w-6 border-t-[2px] border-dashed border-[#d946ef]"></span> INS (DEAD RECKONING) — DEMO
                  </div>
                  <div className="flex items-center gap-3 mb-3 text-white">
-                     <span className="w-6 border-t-[2px] border-solid border-[#4ade80]"></span> TAN + EKF (ESTIMATED)
+                     <span className="w-6 border-t-[2px] border-solid border-[#4ade80]"></span> EKF ESTIMATED — DEMO
                  </div>
                  <div className="flex items-center gap-3 text-white">
                      <div className="w-6 flex items-center justify-center">
@@ -336,8 +354,8 @@ export const Dashboard: React.FC = () => {
           { l: 'ALT (MSL)', v: `${state.alt.toFixed(0)} FT`, c: 'text-white' },
           { l: 'AGL', v: `${agl.toFixed(0)} FT`, c: 'text-white' },
           { l: 'VS', v: `${state.vs.toFixed(0)} FPM`, c: 'text-white' },
-          { l: 'TURN RATE', v: `${state.turnRate.toFixed(1)} °/s`, c: 'text-white' },
-          { l: 'G LOAD', v: `${state.gLoad.toFixed(2)} g`, c: 'text-white' },
+          { l: 'ACTIVE AID', v: `${state.activeAid}`, c: 'text-[#a3e635]' },
+          { l: 'RADAR', v: `${state.radarStatus}`, c: state.radarStatus === 'FAULT' ? 'text-red-500' : state.radarStatus === 'ISOLATED' ? 'text-orange-500' : 'text-green-400' },
         ].map((i, idx) => (
           <div key={idx} className="flex flex-col items-center flex-1">
              <span className="text-[10px] text-gray-400 tracking-widest mb-1">{i.l}</span>
@@ -355,7 +373,6 @@ export const Dashboard: React.FC = () => {
               { id: 'SENSORS', icon: <Activity size={14}/> },
               { id: 'POSITION ERROR', icon: <Target size={14}/> },
               { id: 'EVENT LOG', icon: <AlignLeft size={14}/> },
-              { id: 'SYSTEM STATUS', icon: <Settings size={14}/> },
               { id: 'TAN / TERRAIN INFO', icon: <Mountain size={14}/> },
               { id: 'FDI SUMMARY', icon: <ShieldAlert size={14}/> },
             ].map((tab, idx) => (
@@ -387,7 +404,7 @@ export const Dashboard: React.FC = () => {
                            fill="none" 
                            stroke="#f97316" 
                            strokeWidth="2" 
-                           points={missionData.slice(0, currentTimeIndex).map((d, i) => `${(i / missionData.length) * 100},${100 - (d.errorEkf / 3)}`).join(' ')}
+                           points={missionData.slice(0, currentTimeIndex).map((d, i) => `${(i / missionData.length) * 100},${100 - Math.min(100, (d.errorEkf / 15000) * 100)}`).join(' ')}
                          />
                        </svg>
                        <div className="absolute inset-0 border-l border-b border-slate-700 pointer-events-none"></div>
@@ -395,7 +412,7 @@ export const Dashboard: React.FC = () => {
                   </div>
 
                   <div className="space-y-4">
-                    <h3 className="text-slate-500 text-[10px] tracking-widest border-b border-slate-800 pb-1">INS DRIFT (DEAD RECKONING)</h3>
+                    <h3 className="text-slate-500 text-[10px] tracking-widest border-b border-slate-800 pb-1">INS DRIFT (DEAD RECKONING — DEMO REPLAY)</h3>
                     <div className="text-lg text-fuchsia-500">{state.insDriftM.toFixed(1)} <span className="text-xs">meters</span></div>
                     <p className="text-slate-600 text-[9px] text-justify pr-2 font-mono mt-1 leading-tight">
                       During GNSS denial, INS accumulates temporal drift. 
@@ -418,13 +435,23 @@ export const Dashboard: React.FC = () => {
                    </div>
                    <div className="flex justify-between items-center bg-slate-900 p-2 border border-slate-800">
                       <span className="text-white text-[10px]">RADAR ALTIMETER</span>
-                      <span className={`text-[10px] font-bold ${state.radarStatus === 'FAULT' ? 'text-red-500' : state.radarStatus === 'ISOLATED' ? 'text-orange-500' : 'text-green-500'}`}>{state.radarStatus}</span>
+                      <span className={`text-[10px] font-bold ${state.radarStatus === 'FAULT' ? 'text-red-500' : state.radarStatus === 'ISOLATED' ? 'text-orange-500' : 'text-green-500'}`}>{state.radarStatus === 'FAULT' ? 'ISOLATED / FAULT' : state.radarStatus}</span>
                    </div>
                  </div>
                  <div className="w-1/3 space-y-2">
                    <div className="flex justify-between items-center bg-slate-900 p-2 border border-slate-800">
                       <span className="text-white text-[10px]">INERTIAL (INS)</span>
-                      <span className="text-[10px] font-bold text-green-500">ACTIVE</span>
+                      <span className="text-[10px] font-bold text-green-500">ACTIVE (DEMO REPLAY)</span>
+                   </div>
+                   <div className="flex justify-between items-center bg-slate-900 p-2 border border-slate-800">
+                      <span className="text-white text-[10px]">MAGNETOMETER</span>
+                      <span className={`text-[10px] font-bold text-green-500`}>ACTIVE</span>
+                   </div>
+                   <div className="flex justify-between items-center bg-slate-900 p-2 border border-slate-800">
+                      <span className="text-white text-[10px]">MAGNAV</span>
+                      <span className={`text-[10px] font-bold text-green-500`}>
+                         {state.time >= 140 && state.time < 150 ? 'ACQUIRING / AVAILABLE' : (state.time >= 150 && state.time < 180 ? 'ACTIVE / DEMO' : 'AVAILABLE')}
+                      </span>
                    </div>
                  </div>
               </div>
@@ -442,7 +469,7 @@ export const Dashboard: React.FC = () => {
                       <div className="text-[10px] text-green-400">{state.terrainObs.toFixed(1)}%</div>
                     </div>
                     <div>
-                      <div className="text-[9px] text-slate-500 mb-1 tracking-widest">MATCH SCORE</div>
+                      <div className="text-[9px] text-slate-500 mb-1 tracking-widest">MATCH SCORE (DEMO)</div>
                       <div className="text-[10px] text-green-400">
                          {state.radarStatus === 'FAULT' || state.radarStatus === 'ISOLATED' || state.tanMatchScore === 0 ? 'N/A' : state.tanMatchScore.toFixed(1)}
                       </div>
@@ -474,16 +501,71 @@ export const Dashboard: React.FC = () => {
                  {state.time >= 75 && <div className="flex gap-4"><span className="text-cyan-600">75.0</span> <span className="text-green-400">TAN CORRECTION ACTIVE</span></div>}
                  {state.time >= 120 && <div className="flex gap-4"><span className="text-cyan-600">120.0</span> <span className="text-red-500">RADAR ALTIMETER FAULT</span></div>}
                  {state.time >= 140 && <div className="flex gap-4"><span className="text-cyan-600">140.0</span> <span className="text-orange-400">FDI ISOLATES RADAR</span></div>}
-                 {state.time >= 160 && <div className="flex gap-4"><span className="text-cyan-600">160.0</span> <span className="text-green-400">RADAR RECOVERED</span></div>}
-                 {state.time >= 180 && <div className="flex gap-4"><span className="text-cyan-600">180.0</span> <span className="text-green-400">TAN+EKF AID RESTORED</span></div>}
+                 {state.time >= 145 && <div className="flex gap-4"><span className="text-cyan-600">145.0</span> <span className="text-blue-400">MAGNETIC AID EVALUATION</span></div>}
+                 {state.time >= 150 && <div className="flex gap-4"><span className="text-cyan-600">150.0</span> <span className="text-purple-400">MAGNETIC ANOMALY AID ACQUIRED</span></div>}
+                 {state.time >= 155 && <div className="flex gap-4"><span className="text-cyan-600">155.0</span> <span className="text-green-400">MAGNAV CORRECTION ACTIVE</span></div>}
+                 {state.time >= 180 && <div className="flex gap-4"><span className="text-cyan-600">180.0</span> <span className="text-slate-400">DEMO END</span></div>}
               </div>
             )}
             
-            {activeTab === 'POSITION ERROR' || activeTab === 'SYSTEM STATUS' || activeTab === 'FDI SUMMARY' ? (
-                <div className="font-mono text-[10px] text-gray-500 h-full flex items-center justify-center">
-                    Data populating from demoReplay.ts...
-                </div>
-            ) : null}
+            {activeTab === 'POSITION ERROR' && (
+              <div className="flex h-full w-full font-mono gap-4">
+                 <div className="w-1/2 flex flex-col">
+                    <div className="text-[10px] text-slate-500 tracking-widest mb-1 border-b border-slate-800 pb-1">REFERENCE VS INS</div>
+                    <div className="text-fuchsia-500 text-lg mb-2">{state.insDriftM.toFixed(1)} <span className="text-xs">m</span></div>
+                    <div className="flex-1 w-full bg-slate-900 border border-slate-800 relative">
+                       <svg width="100%" height="100%" preserveAspectRatio="none">
+                         <polyline fill="none" stroke="#d946ef" strokeWidth="2" points={missionData.slice(0, currentTimeIndex).map((d, i) => `${(i / missionData.length) * 100},${100 - Math.min(100, (d.insDriftM / 15000) * 100)}`).join(' ')} />
+                       </svg>
+                    </div>
+                 </div>
+                 <div className="w-1/2 flex flex-col">
+                    <div className="text-[10px] text-slate-500 tracking-widest mb-1 border-b border-slate-800 pb-1">REFERENCE VS EKF</div>
+                    <div className="text-orange-400 text-lg mb-2">{state.errorEkf.toFixed(1)} <span className="text-xs">m</span></div>
+                    <div className="flex-1 w-full bg-slate-900 border border-slate-800 relative">
+                       <svg width="100%" height="100%" preserveAspectRatio="none">
+                         <polyline fill="none" stroke="#f97316" strokeWidth="2" points={missionData.slice(0, currentTimeIndex).map((d, i) => `${(i / missionData.length) * 100},${100 - Math.min(100, (d.errorEkf / 15000) * 100)}`).join(' ')} />
+                       </svg>
+                    </div>
+                 </div>
+              </div>
+            )}
+            
+
+            {activeTab === 'FDI SUMMARY' && (
+              <div className="font-mono text-[10px] space-y-3 p-2">
+                 <div className="flex gap-4 items-center border-b border-slate-800 pb-2">
+                    <span className="w-24 text-slate-500 tracking-widest">ML STATUS:</span>
+                    <span className={state.radarStatus === 'FAULT' || state.radarStatus === 'ISOLATED' ? 'text-red-500 font-bold' : 'text-green-400'}>
+                        {state.radarStatus === 'FAULT' || state.radarStatus === 'ISOLATED' ? 'RADAR ANOMALY DETECTED (DEMO)' : 'NOMINAL'}
+                    </span>
+                 </div>
+                 <div className="flex gap-4 items-center border-b border-slate-800 pb-2">
+                    <span className="w-24 text-slate-500 tracking-widest">FDI ACTION:</span>
+                    <span className={state.fdiRadar === 'ISOLATED' ? 'text-orange-500 font-bold' : state.fdiRadar === 'SUSPECTED' ? 'text-yellow-500' : 'text-green-400'}>
+                        {state.fdiRadar === 'ISOLATED' ? 'RADAR FAULT CONFIRMED -> ISOLATED' : state.fdiRadar === 'SUSPECTED' ? 'SUSPECTING RADAR FAULT' : 'ALL SENSORS ACCEPTED'}
+                    </span>
+                 </div>
+                 <div className="flex gap-4 items-center border-b border-slate-800 pb-2">
+                    <span className="w-24 text-slate-500 tracking-widest">TAN STATUS:</span>
+                    <span className={state.time >= 120 ? 'text-orange-500 font-bold' : 'text-green-400'}>
+                        {state.time < 75 ? 'UNAVAILABLE / SEARCHING' : state.time >= 120 ? 'UNAVAILABLE' : 'ACTIVE'}
+                    </span>
+                 </div>
+                 <div className="flex gap-4 items-center border-b border-slate-800 pb-2">
+                    <span className="w-24 text-slate-500 tracking-widest">MAGNAV:</span>
+                    <span className="text-pink-400">
+                        {state.time >= 150 ? 'ACTIVE (SIMULATED CONSTRAINT)' : 'AVAILABLE'}
+                    </span>
+                 </div>
+                 <div className="flex gap-4 items-center">
+                    <span className="w-24 text-slate-500 tracking-widest">FUSION LAYER:</span>
+                    <span className="text-green-400 font-bold">
+                        EKF CONTINUES ({state.navMode})
+                    </span>
+                 </div>
+              </div>
+            )}
           </div>
       </div>
     </div>

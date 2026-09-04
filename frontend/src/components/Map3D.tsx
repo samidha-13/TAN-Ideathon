@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Line } from '@react-three/drei';
 import * as THREE from 'three';
@@ -29,17 +29,17 @@ const TerrainMesh: React.FC<{ heightmap: Heightmap, centerLat: number }> = ({ he
   const geometry = useMemo(() => {
     const latMeters = (heightmap.bounds.lat_max - heightmap.bounds.lat_min) * 111000;
     const lonMeters = (heightmap.bounds.lon_max - heightmap.bounds.lon_min) * 111000 * Math.cos(centerLat * Math.PI / 180);
-    const { resolution, data, min_elevation, max_elevation } = heightmap;
+    const { resolution, data } = heightmap;
     
     const geom = new THREE.PlaneGeometry(lonMeters, latMeters, resolution - 1, resolution - 1);
     const pos = geom.attributes.position;
     const colors = new Float32Array(pos.count * 3);
     
-    // Topographic color palette
-    const cLow = new THREE.Color("#162113");     // Dark deep valleys
-    const cMid = new THREE.Color("#373f22");     // Olive mountain slopes
-    const cHigh = new THREE.Color("#5e584a");    // Dry rocky ridges
-    const cPeak = new THREE.Color("#827a6b");    // High altitude stone
+    // Topographic color palette - brightened for visibility
+    const cLow = new THREE.Color("#2a3b24");     
+    const cMid = new THREE.Color("#546132");     
+    const cHigh = new THREE.Color("#877f6b");    
+    const cPeak = new THREE.Color("#b8ad99");    
     const c = new THREE.Color();
     
     for (let i = 0; i < pos.count; i++) {
@@ -47,13 +47,14 @@ const TerrainMesh: React.FC<{ heightmap: Heightmap, centerLat: number }> = ({ he
         const col = i % resolution;
         if (data[row] && data[row][col] !== undefined) {
              const elev = data[row][col];
-             pos.setZ(i, Math.max(0, elev) * 1.5);
+             pos.setZ(i, Math.max(0, elev) * 2.0); // 2x exaggeration
              
-             // Map color using actual elevation normalized 
-             const n = Math.max(0, Math.min(1, (elev - min_elevation) / (max_elevation - min_elevation)));
-             if (n < 0.3) c.lerpColors(cLow, cMid, n / 0.3);
-             else if (n < 0.7) c.lerpColors(cMid, cHigh, (n - 0.3) / 0.4);
-             else c.lerpColors(cHigh, cPeak, (n - 0.7) / 0.3);
+             // Map color using absolute elevation so Flat plains look properly low-altitude
+             // and mountains reach peak colors
+             const n = Math.max(0, Math.min(1, elev / 3000));
+             if (n < 0.2) c.lerpColors(cLow, cMid, n / 0.2);
+             else if (n < 0.5) c.lerpColors(cMid, cHigh, (n - 0.2) / 0.3);
+             else c.lerpColors(cHigh, cPeak, (n - 0.5) / 0.5);
              
              colors[i * 3] = c.r;
              colors[i * 3 + 1] = c.g;
@@ -146,6 +147,26 @@ const FlightPaths = ({ data, currentTimeIndex, centerLat, centerLon }: { data: D
     );
 };
 
+const GuidancePath = ({ data, currentTimeIndex, centerLat, centerLon }: { data: DroneState[], currentTimeIndex: number, centerLat: number, centerLon: number }) => {
+    const future = data.slice(currentTimeIndex, Math.min(data.length, currentTimeIndex + 100));
+    const lonScale = 111000 * Math.cos(centerLat * Math.PI / 180);
+    const latScale = -111000;
+
+    const ekfPts = future.map(d => new THREE.Vector3((d.ekfLon - centerLon) * lonScale, d.alt, (d.ekfLat - centerLat) * latScale));
+    
+    const mode = data[currentTimeIndex]?.navMode || '';
+    let color = "#4ade80"; 
+    if (mode.includes('INS ONLY') || mode.includes('EVALUATING')) {
+        color = "#d946ef"; 
+    }
+    
+    return (
+        <group position={[0, 10, 0]}>
+            {ekfPts.length > 1 && <Line points={ekfPts} color={color} dashed dashSize={200} gapSize={100} lineWidth={3} opacity={0.6} transparent />}
+        </group>
+    );
+};
+
 export const Map3D: React.FC<Map3DProps> = ({ mission, data, currentTimeIndex, mode }) => {
   const [heightmap, setHeightmap] = useState<Heightmap | null>(null);
 
@@ -174,14 +195,15 @@ export const Map3D: React.FC<Map3DProps> = ({ mission, data, currentTimeIndex, m
       
       {mode === 'map' && <OrbitControls enableRotate={false} />}
       
-      <ambientLight intensity={0.4} />
-      <hemisphereLight skyColor="#2e4d73" groundColor="#0f1710" intensity={0.5} />
-      <directionalLight position={[15000, 10000, 8000]} intensity={1.2} color="#ffeed6" />
-      <directionalLight position={[-10000, 8000, -8000]} intensity={0.3} color="#9bb4d6" />
+      <ambientLight intensity={0.6} />
+      <hemisphereLight args={['#2e4d73', '#0f1710', 0.8]} />
+      <directionalLight position={[15000, 10000, 8000]} intensity={1.5} color="#ffeed6" />
+      <directionalLight position={[-10000, 8000, -8000]} intensity={0.5} color="#9bb4d6" />
       
       {heightmap && <TerrainMesh heightmap={heightmap} centerLat={centerLat} />}
       
       {currentState && mode === 'map' && <FlightPaths data={data} currentTimeIndex={currentTimeIndex} centerLat={centerLat} centerLon={centerLon} />}
+      {currentState && mode === 'hud' && <GuidancePath data={data} currentTimeIndex={currentTimeIndex} centerLat={centerLat} centerLon={centerLon} />}
       {currentState && <Aircraft state={currentState} mode={mode} centerLat={centerLat} centerLon={centerLon} />}
     </Canvas>
   );
