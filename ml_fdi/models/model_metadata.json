@@ -1,0 +1,30 @@
+{
+  "model_type": "sklearn.ensemble.IsolationForest",
+  "n_estimators": 200,
+  "contamination": "auto",
+  "random_state": 42,
+  "feature_names": [
+    "tan_match_score",
+    "tan_valid",
+    "terrain_obs_ordinal",
+    "uncertainty_lat_m",
+    "uncertainty_lon_m",
+    "uncertainty_alt_m",
+    "delta_unc_lat",
+    "delta_unc_lon",
+    "delta_est_lat",
+    "delta_est_lon",
+    "rolling_mean_unc_lat_10",
+    "rolling_mean_tan_score_10",
+    "unc_change_rate"
+  ],
+  "training_missions": [
+    "desert_mission",
+    "mountain_mission",
+    "western_ghats_mission",
+    "flat_plain_mission"
+  ],
+  "healthy_training_sample_count": 12476,
+  "created_at_utc": "2026-09-04T06:23:50.769238+00:00",
+  "sklearn_version": "1.6.1"
+}
