@@ -13,6 +13,7 @@ from simulator.gnss_model import GNSSModel
 from simulator.radar_altimeter import RadarAltimeter, MockTerrainProvider
 from simulator.magnetometer import Magnetometer, MockMagneticProvider
 from simulator.faults import FaultManager
+from navigation.terrain_provider import SRTMTerrainProvider
 
 def load_config(mission_name: str) -> Dict[str, Any]:
     config_path = os.path.join(os.path.dirname(__file__), '..', 'configs', 'missions', f'{mission_name}.json')
@@ -37,8 +38,9 @@ def run_mission(mission_name: str, inject_faults: bool = True):
     
     imu = IMUModel(config)
     gnss = GNSSModel(config)
-    radar = RadarAltimeter(config, MockTerrainProvider())
+    radar = RadarAltimeter(config, SRTMTerrainProvider())
     mag = Magnetometer(config, MockMagneticProvider())
+
     
     print(f"Generating trajectory for {mission_name}...")
     states = trajectory_gen.generate()
