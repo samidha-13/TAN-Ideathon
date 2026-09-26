@@ -1,13 +1,13 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Line } from '@react-three/drei';
 import * as THREE from 'three';
-import type { DroneState } from '../demo/demoReplay';
+import type { NavigationRecord } from '../services/dataService';
 import type { MissionConfig } from '../demo/missions';
 
 interface Map3DProps {
   mission: MissionConfig;
-  data: DroneState[];
+  data: NavigationRecord[];
   currentTimeIndex: number;
   mode: 'hud' | 'map';
 }
@@ -81,17 +81,17 @@ const TerrainMesh: React.FC<{ heightmap: Heightmap, centerLat: number }> = ({ he
   );
 };
 
-const Aircraft = ({ state, mode, centerLat, centerLon }: { state: DroneState, mode: string, centerLat: number, centerLon: number }) => {
+const Aircraft = ({ state, mode, centerLat, centerLon, hdg }: { state: NavigationRecord, mode: string, centerLat: number, centerLon: number, hdg: number }) => {
   const { camera } = useThree();
   
-  const x = (state.ekfLon - centerLon) * 111000 * Math.cos(centerLat * Math.PI / 180);
-  const z = -(state.ekfLat - centerLat) * 111000;
-  const y = state.alt;
+  const x = (state.estimated_lon - centerLon) * 111000 * Math.cos(centerLat * Math.PI / 180);
+  const z = -(state.estimated_lat - centerLat) * 111000;
+  const y = state.estimated_alt;
   const pos = new THREE.Vector3(x, y, z);
   
   useFrame(() => {
     if (mode === 'hud') {
-      const hdgRad = -(state.hdg - 90) * (Math.PI / 180);
+      const hdgRad = -(hdg - 90) * (Math.PI / 180);
       
       // Tight cockpit trailing camera
       const camOffset = new THREE.Vector3(
@@ -125,17 +125,17 @@ const Aircraft = ({ state, mode, centerLat, centerLon }: { state: DroneState, mo
   ) : null;
 };
 
-const FlightPaths = ({ data, currentTimeIndex, centerLat, centerLon }: { data: DroneState[], currentTimeIndex: number, centerLat: number, centerLon: number }) => {
+const FlightPaths = ({ data, currentTimeIndex, centerLat, centerLon }: { data: NavigationRecord[], currentTimeIndex: number, centerLat: number, centerLon: number }) => {
     const history = data.slice(0, currentTimeIndex + 1);
     const lonScale = 111000 * Math.cos(centerLat * Math.PI / 180);
     const latScale = -111000;
 
-    const mkPoints = (keyLat: 'refLat'|'insLat'|'ekfLat', keyLon: 'refLon'|'insLon'|'ekfLon') => 
-        history.map(d => new THREE.Vector3((d[keyLon] - centerLon) * lonScale, d.alt, (d[keyLat] - centerLat) * latScale));
+    const mkPoints = (keyLat: keyof NavigationRecord, keyLon: keyof NavigationRecord) => 
+        history.map(d => new THREE.Vector3(((d[keyLon] as number) - centerLon) * lonScale, d.estimated_alt, ((d[keyLat] as number) - centerLat) * latScale));
 
-    const refPts = mkPoints('refLat', 'refLon');
-    const insPts = mkPoints('insLat', 'insLon');
-    const ekfPts = mkPoints('ekfLat', 'ekfLon');
+    const refPts = mkPoints('truth_lat', 'truth_lon');
+    const insPts = mkPoints('ins_lat', 'ins_lon');
+    const ekfPts = mkPoints('estimated_lat', 'estimated_lon');
     
     return (
         <group position={[0, 40, 0]}> {/* Bump slightly to avoid z-fighting with terrain peaks */}
@@ -160,6 +160,16 @@ export const Map3D: React.FC<Map3DProps> = ({ mission, data, currentTimeIndex, m
   }, [mission.terrainSource]);
 
   const currentState = data[currentTimeIndex];
+  let hdg = 0;
+  if (currentState && currentTimeIndex > 0) {
+      const prev = data[currentTimeIndex - 1];
+      const dy = currentState.estimated_lon - prev.estimated_lon;
+      const dx = currentState.estimated_lat - prev.estimated_lat;
+      if (dx !== 0 || dy !== 0) {
+          hdg = (Math.atan2(dy, dx) * 180 / Math.PI);
+          if (hdg < 0) hdg += 360;
+      }
+  }
 
   return (
     <Canvas camera={{ position: [0, 5000, 5000], far: 100000, fov: mode === 'hud' ? 65 : 45 }}>
@@ -175,14 +185,14 @@ export const Map3D: React.FC<Map3DProps> = ({ mission, data, currentTimeIndex, m
       {mode === 'map' && <OrbitControls enableRotate={false} />}
       
       <ambientLight intensity={0.4} />
-      <hemisphereLight skyColor="#2e4d73" groundColor="#0f1710" intensity={0.5} />
+      <hemisphereLight args={['#2e4d73', '#0f1710', 0.5]} />
       <directionalLight position={[15000, 10000, 8000]} intensity={1.2} color="#ffeed6" />
       <directionalLight position={[-10000, 8000, -8000]} intensity={0.3} color="#9bb4d6" />
       
       {heightmap && <TerrainMesh heightmap={heightmap} centerLat={centerLat} />}
       
       {currentState && mode === 'map' && <FlightPaths data={data} currentTimeIndex={currentTimeIndex} centerLat={centerLat} centerLon={centerLon} />}
-      {currentState && <Aircraft state={currentState} mode={mode} centerLat={centerLat} centerLon={centerLon} />}
+      {currentState && <Aircraft state={currentState} mode={mode} centerLat={centerLat} centerLon={centerLon} hdg={hdg} />}
     </Canvas>
   );
 };

@@ -34,17 +34,24 @@ Usage
 import os
 import csv
 import math
+import joblib
+import os
+import math
+from collections import deque
+from navigation.tan import TANResult
+from ml_fdi.feature_engineering import _TERRAIN_OBS_MAP
 import json
 import logging
+from collections import deque
 from dataclasses import dataclass, field, asdict
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Deque
 
 from navigation.terrain_provider   import SRTMTerrainProvider
 from navigation.terrain_observability import (
     sample_elevation_profile_around, compute_observability
 )
 from navigation.ins                import INSPropagator
-from navigation.tan                import TerrainAidedNavigation, TANResult
+from navigation.tan                import TerrainAidedNavigation, TANResult, ProfileSample
 from navigation.fdi                import FaultDetectionIsolation
 from navigation.ekf                import NavigationEKF
 from navigation.magnav             import MagNavEstimator
@@ -66,6 +73,10 @@ class NavigationRecord:
     estimated_lat:      float
     estimated_lon:      float
     estimated_alt:      float
+    # INS predicted position
+    ins_lat:            float
+    ins_lon:            float
+    ins_alt:            float
     nav_mode:           str    # FULL_AID | TAN_ONLY | GNSS_ONLY | MAG_ONLY | INS_ONLY
     # Sensor validity (FDI decisions)
     gnss_accepted:      bool
@@ -94,6 +105,16 @@ class NavigationRecord:
     error_lon_m:        float   = float("nan")
     error_3d_m:         float   = float("nan")
     ins_drift_m:        float   = 0.0
+    # Flight dynamics (from INS / IMU — not truth)
+    ground_speed_mps:   float   = 0.0
+    vertical_speed_mps: float   = 0.0
+    turn_rate_dps:      float   = 0.0
+    g_load:             float   = 1.0
+    # Event emitted at this timestep (empty if none)
+    event:              str     = ""
+    # ML-assisted FDI is a shadow-monitoring signal; it never gates fusion.
+    ml_status:          str     = "UNAVAILABLE"
+    ml_score:           float   = float("nan")
 
 
 # ── engine ────────────────────────────────────────────────────────────────────
@@ -179,11 +200,31 @@ class NavigationEngine:
 
         # Initialise navigation components
         self._ins    = INSPropagator(init_lat, init_lon, init_alt, init_yaw)
-        self._tan    = TerrainAidedNavigation(self._terrain, search_radius_m=3000.0, grid_steps=11)
+        # TAN is evaluated at the mission sensor rate.  Keep the candidate grid
+        # compact so full-mission API responses remain suitable for local demo
+        # playback while retaining a two-dimensional terrain search.
+        self._tan    = TerrainAidedNavigation(self._terrain, search_radius_m=3000.0, grid_steps=5)
         self._fdi    = FaultDetectionIsolation(persist_steps=3, recovery_steps=5)
+        model_path = 'ml_fdi/models/rf_model.joblib'
+        if os.path.exists(model_path):
+            self._ml_fdi = joblib.load(model_path)
+        else:
+            self._ml_fdi = None
+        self._ml_history = deque(maxlen=10)
+        self._ml_anomaly = False
         self._ekf    = NavigationEKF(q_pos_deg=1e-7, q_vel=0.02, q_att=1e-4)
         self._magnav = MagNavEstimator(history_len=50)
         self._total_drift_m = 0.0   # cumulative drift (not reset by EKF correction)
+        # Ten samples provide the TAN minimum profile at the 10 Hz mission rate
+        # without repeatedly evaluating an unnecessarily long SRTM path.
+        self._profile_buf: Deque[ProfileSample] = deque(maxlen=10)
+        self._last_tan_result: Optional[TANResult] = None
+        self._last_obs_result = None
+        self._prev_fdi_radar = "ACCEPTED"
+        self._prev_fdi_gnss  = "ACCEPTED"
+        self._prev_tan_valid = False
+        self._prev_nav_mode  = "FULL_AID"
+        self._prev_terrain_obs = "N/A"
 
         records: List[NavigationRecord] = []
 
@@ -225,7 +266,7 @@ class NavigationEngine:
             ) * dt
 
             # ── 2. EKF predict ────────────────────────────────────────────────
-            self._ekf.predict(dt=dt)
+            self._ekf.predict(ins_lat=ins_state.latitude, dt=dt)
 
             # ── 3. FDI checks ─────────────────────────────────────────────────
             # For radar innovation gate, predict AGL from current INS + SRTM
@@ -245,11 +286,26 @@ class NavigationEngine:
             )
             mag_accepted   = self._fdi.check_magnetometer(mag_row)
 
+            if self._ml_anomaly:
+                gnss_accepted = False
+                radar_accepted = False
+                mag_accepted = False
+
             # ── 4. TAN computation (only if radar accepted) ───────────────────
             tan_result: Optional[TANResult] = None
-            if radar_accepted:
-                agl = float(radar_row.get("altitude_above_ground_m", float("nan")))
-                # Observability from terrain around INS position
+            agl = float(radar_row.get("altitude_above_ground_m", float("nan")))
+            if radar_accepted and math.isfinite(agl):
+                self._profile_buf.append(ProfileSample(
+                    ins_lat=ins_state.latitude,
+                    ins_lon=ins_state.longitude,
+                    ins_alt=ins_state.altitude,
+                    radar_agl=agl,
+                ))
+
+            # Profile correlation is intentionally evaluated at 1 Hz.  The
+            # source stream remains 10 Hz, while a full SRTM grid/profile scan
+            # at every sample makes an API replay impractically slow.
+            if radar_accepted and (idx % 10 == 0):
                 elevs, spacing = sample_elevation_profile_around(
                     self._terrain,
                     ins_state.latitude,
@@ -263,11 +319,18 @@ class NavigationEngine:
                     ins_lat   = ins_state.latitude,
                     ins_lon   = ins_state.longitude,
                     ins_alt   = ins_state.altitude,
-                    radar_agl = agl,
+                    profile   = list(self._profile_buf),
                     obs_result= obs_result,
                 )
+                self._last_tan_result = tan_result
+                self._last_obs_result = obs_result
+            elif radar_accepted:
+                tan_result = self._last_tan_result
+                obs_result = self._last_obs_result
             else:
                 obs_result = None
+                self._last_tan_result = None
+                self._last_obs_result = None
 
             # ── 5. MagNav ─────────────────────────────────────────────────────
             magnav_result = self._magnav.update(
@@ -309,7 +372,7 @@ class NavigationEngine:
                 mag_used = True
 
             # ── 7. Apply EKF correction to INS (only when meaningful) ──────────
-            corr_lat, corr_lon, corr_alt = self._ekf.apply_correction_to_ins(
+            corr_lat, corr_lon, corr_alt, d_vn, d_ve, d_vd, d_r, d_p, d_y = self._ekf.apply_correction_to_ins(
                 ins_state.latitude,
                 ins_state.longitude,
                 ins_state.altitude,
@@ -318,7 +381,7 @@ class NavigationEngine:
             # to preserve drift accumulation in INS-only mode
             corr_dist = abs(corr_lat - ins_state.latitude) * self._M_PER_DEG
             if corr_dist > 0.01 or abs(corr_alt - ins_state.altitude) > 0.01:
-                self._ins.reset_position(corr_lat, corr_lon, corr_alt)
+                self._ins.apply_corrections(corr_lat, corr_lon, corr_alt, d_vn, d_ve, d_vd, d_r, d_p, d_y)
 
             # ── 8. Determine navigation mode ──────────────────────────────────
             nav_mode = self._nav_mode(gnss_used, tan_used, mag_used)
@@ -341,14 +404,41 @@ class NavigationEngine:
                 e_lon = (corr_lon - t_lon) * self._M_PER_DEG * math.cos(math.radians(t_lat))
                 e_3d  = math.sqrt(e_lat**2 + e_lon**2)
 
-            # ── 11. Build output record ───────────────────────────────────────
+            # ── 11. Flight dynamics from INS / IMU ───────────────────────────
+            gs_mps = math.sqrt(ins_state.vel_north ** 2 + ins_state.vel_east ** 2)
+            vs_mps = -ins_state.vel_down
+            try:
+                yaw_rate = float(imu_row.get("yaw_rate", 0.0))
+            except (TypeError, ValueError):
+                yaw_rate = 0.0
+            turn_rate_dps = math.degrees(yaw_rate)
+            try:
+                ax = float(imu_row.get("ax", 0.0))
+                ay = float(imu_row.get("ay", 0.0))
+                az = float(imu_row.get("az", 0.0))
+                g_load = math.sqrt(ax ** 2 + ay ** 2 + az ** 2) / 9.80665
+            except (TypeError, ValueError):
+                g_load = 1.0
+
+            # ── 12. Event detection ───────────────────────────────────────────
             fdi_status = self._fdi.status_summary()
+            event = self._detect_event(
+                fdi_status=fdi_status,
+                tan_valid=(tan_result is not None and tan_result.valid),
+                nav_mode=nav_mode,
+                terrain_obs=(obs_result.level.value if obs_result is not None else "N/A"),
+                tan_reject=(tan_result.reject_reason if tan_result else ""),
+            )
+
             rec = NavigationRecord(
                 timestamp        = ts,
                 mission_index    = mi,
                 estimated_lat    = corr_lat,
                 estimated_lon    = corr_lon,
                 estimated_alt    = corr_alt,
+                ins_lat          = ins_state.latitude,
+                ins_lon          = ins_state.longitude,
+                ins_alt          = ins_state.altitude,
                 nav_mode         = nav_mode,
                 gnss_accepted    = gnss_accepted,
                 radar_accepted   = radar_accepted,
@@ -371,6 +461,11 @@ class NavigationEngine:
                 error_lon_m      = e_lon,
                 error_3d_m       = e_3d,
                 ins_drift_m      = self._total_drift_m,
+                ground_speed_mps = gs_mps,
+                vertical_speed_mps = vs_mps,
+                turn_rate_dps    = turn_rate_dps,
+                g_load           = g_load,
+                event            = event,
             )
             records.append(rec)
 
@@ -378,6 +473,7 @@ class NavigationEngine:
             "Navigation complete: %d steps processed for %s",
             len(records), self.mission_name,
         )
+        self._attach_ml_monitoring(records)
         return records
 
     # ── output helpers ────────────────────────────────────────────────────────
@@ -463,6 +559,69 @@ class NavigationEngine:
         return metrics
 
     # ── private helpers ───────────────────────────────────────────────────────
+
+    def _detect_event(
+        self,
+        fdi_status: Dict[str, str],
+        tan_valid: bool,
+        nav_mode: str,
+        terrain_obs: str,
+        tan_reject: str,
+    ) -> str:
+        """Emit a single event string on notable state transitions."""
+        events: List[str] = []
+
+        if self._prev_fdi_gnss == "ACCEPTED" and fdi_status["gnss"] == "ISOLATED":
+            events.append("GNSS DENIED")
+        elif self._prev_fdi_gnss != "ACCEPTED" and fdi_status["gnss"] == "ACCEPTED":
+            events.append("GNSS RESTORED")
+
+        if fdi_status["radar"] == "SUSPECTED" and self._prev_fdi_radar == "ACCEPTED":
+            events.append("RADAR ANOMALY")
+        if self._prev_fdi_radar != "ISOLATED" and fdi_status["radar"] == "ISOLATED":
+            events.append("RADAR ISOLATED")
+        elif self._prev_fdi_radar == "ISOLATED" and fdi_status["radar"] == "ACCEPTED":
+            events.append("RADAR RECOVERED")
+
+        if not self._prev_tan_valid and tan_valid:
+            events.append("TAN UPDATE")
+        if terrain_obs == "LOW" and self._prev_terrain_obs != "LOW":
+            events.append("LOW TERRAIN OBSERVABILITY")
+        if tan_reject and "LOW" in tan_reject and terrain_obs == "LOW":
+            pass  # already covered by LOW TERRAIN OBSERVABILITY event
+        elif tan_reject and "NCC" in tan_reject and terrain_obs != "LOW":
+            events.append("TAN REJECTED (LOW NCC)")
+
+        if self._prev_nav_mode != "INS_ONLY" and nav_mode == "INS_ONLY":
+            events.append("DEGRADED MODE")
+
+        self._prev_fdi_radar   = fdi_status["radar"]
+        self._prev_fdi_gnss    = fdi_status["gnss"]
+        self._prev_tan_valid   = tan_valid
+        self._prev_nav_mode    = nav_mode
+        self._prev_terrain_obs = terrain_obs
+
+        return " | ".join(events) if events else ""
+
+    @staticmethod
+    def _attach_ml_monitoring(records: List[NavigationRecord]) -> None:
+        """Attach Isolation Forest output after navigation; never alter FDI/EKF."""
+        if not records:
+            return
+        try:
+            from ml_fdi.runtime import MLAnomalyMonitor
+            scores = MLAnomalyMonitor().score_records(records)
+        except Exception as exc:
+            logger.warning("ML anomaly monitor unavailable: %s", exc)
+            return
+
+        previous = "NORMAL"
+        for record, (status, score) in zip(records, scores):
+            record.ml_status = status
+            record.ml_score = score
+            if status == "ANOMALOUS" and previous != "ANOMALOUS":
+                record.event = " | ".join(filter(None, [record.event, "ML ANOMALY DETECTED"]))
+            previous = status
 
     @staticmethod
     def _nav_mode(gnss: bool, tan: bool, mag: bool) -> str:

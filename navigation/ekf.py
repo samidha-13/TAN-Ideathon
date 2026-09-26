@@ -200,15 +200,27 @@ class NavigationEKF:
 
     # ── public interface ──────────────────────────────────────────────────────
 
-    def predict(self, dt: float = 0.1) -> None:
+    def predict(self, ins_lat: float = 0.0, dt: float = 0.1) -> None:
         """
         EKF prediction step.
-        F ≈ I (error states evolve slowly for straight-and-level flight).
-        P ← F P Fᵀ + Q
+        Couples velocity error to position error.
         """
-        # F = Identity for this simplified error-state formulation
-        # P ← P + Q  (since F = I, F P Fᵀ = P)
-        self._P = _mat_add(self._P, self._Q)
+        F = _mat_eye(_N)
+        m_per_deg_lon = self._M_PER_DEG * math.cos(math.radians(ins_lat))
+        if m_per_deg_lon < 1.0: m_per_deg_lon = 1.0
+        
+        F[_I_LAT][_I_VN] = dt / self._M_PER_DEG
+        F[_I_LON][_I_VE] = dt / m_per_deg_lon
+        F[_I_ALT][_I_VD] = -dt
+
+        # State prediction: x = F * x
+        self._x = _mat_vec_mul(F, self._x)
+        
+        # P = F * P * Fᵀ + Q
+        FP = _mat_mul(F, self._P)
+        FPFt = _mat_mul(FP, _mat_T(F))
+        self._P = _mat_add(FPFt, self._Q)
+        
         # Clamp diagonal to prevent runaway
         for i in range(_N):
             self._P[i][i] = min(self._P[i][i], 1e4)
@@ -224,7 +236,10 @@ class NavigationEKF:
         EKF update with GNSS position measurement.
         Innovation: z = [gnss_lat − ins_lat, gnss_lon − ins_lon, gnss_alt − ins_alt]
         """
-        r_deg = r_pos_m / self._M_PER_DEG
+        r_deg_lat = r_pos_m / self._M_PER_DEG
+        m_per_deg_lon = self._M_PER_DEG * math.cos(math.radians(ins_lat))
+        if m_per_deg_lon < 1.0: m_per_deg_lon = 1.0
+        r_deg_lon = r_pos_m / m_per_deg_lon
         r_alt = r_alt_m
 
         # H: 3×9, rows select [δ_lat, δ_lon, δ_alt]
@@ -242,8 +257,8 @@ class NavigationEKF:
 
         # R measurement noise
         R = _mat_zeros(3, 3)
-        R[0][0] = r_deg ** 2
-        R[1][1] = r_deg ** 2
+        R[0][0] = r_deg_lat ** 2
+        R[1][1] = r_deg_lon ** 2
         R[2][2] = r_alt ** 2
 
         self._update(H, z, R, meas_name="GNSS")
@@ -328,14 +343,20 @@ class NavigationEKF:
         Apply the EKF error-state correction to the INS position estimate.
         After application, reset the error state to zero (closed-loop form).
 
-        Returns corrected (lat, lon, alt).
+        Returns corrected (lat, lon, alt) and delta (vn, ve, vd, roll, pitch, yaw).
         """
         corr_lat = ins_lat + self._x[_I_LAT]
         corr_lon = ins_lon + self._x[_I_LON]
         corr_alt = ins_alt + self._x[_I_ALT]
+        d_vn = self._x[_I_VN]
+        d_ve = self._x[_I_VE]
+        d_vd = self._x[_I_VD]
+        d_roll = self._x[_I_ROLL]
+        d_pitch = self._x[_I_PITCH]
+        d_yaw = self._x[_I_YAW]
         # Reset error state
         self._x = [0.0] * _N
-        return corr_lat, corr_lon, corr_alt
+        return corr_lat, corr_lon, corr_alt, d_vn, d_ve, d_vd, d_roll, d_pitch, d_yaw
 
     # ── internal update step ──────────────────────────────────────────────────
 

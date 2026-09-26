@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as Cesium from 'cesium';
-import type { DroneState } from '../demo/demoReplay';
+import type { NavigationRecord } from '../services/dataService';
 
 // We must import the styling for Cesium
 import 'cesium/Build/Cesium/Widgets/widgets.css';
 
 interface CesiumMapProps {
-  data: DroneState[];
+  data: NavigationRecord[];
   currentTimeIndex: number;
   onError: () => void;
 }
@@ -63,13 +63,13 @@ export const CesiumMap: React.FC<CesiumMapProps> = ({ data, currentTimeIndex, on
       // Start/End Markers
       if (data.length > 0) {
         viewer.entities.add({
-          position: Cesium.Cartesian3.fromDegrees(data[0].refLon, data[0].refLat, data[0].alt),
+          position: Cesium.Cartesian3.fromDegrees(data[0].truth_lon, data[0].truth_lat, data[0].estimated_alt),
           point: { pixelSize: 8, color: Cesium.Color.LIME, outlineColor: Cesium.Color.BLACK, outlineWidth: 2 },
           label: { text: "START", font: '11px sans-serif', fillColor: Cesium.Color.WHITE, verticalOrigin: Cesium.VerticalOrigin.BOTTOM, pixelOffset: new Cesium.Cartesian2(0, -10) }
         });
         const last = data[data.length - 1];
         viewer.entities.add({
-          position: Cesium.Cartesian3.fromDegrees(last.refLon, last.refLat, last.alt),
+          position: Cesium.Cartesian3.fromDegrees(last.truth_lon, last.truth_lat, last.estimated_alt),
           point: { pixelSize: 8, color: Cesium.Color.LIME, outlineColor: Cesium.Color.BLACK, outlineWidth: 2 },
           label: { text: "END", font: '11px sans-serif', fillColor: Cesium.Color.WHITE, verticalOrigin: Cesium.VerticalOrigin.BOTTOM, pixelOffset: new Cesium.Cartesian2(0, -10) }
         });
@@ -78,13 +78,13 @@ export const CesiumMap: React.FC<CesiumMapProps> = ({ data, currentTimeIndex, on
       // Pre-calculate geography mapping correctly: Longitude, Latitude, Alt
       // Temporary Discontinuity Validation requested by user:
       
-      const validatePath = (pathName: string, lonKey: 'refLon'|'insLon'|'ekfLon', latKey: 'refLat'|'insLat'|'ekfLat') => {
+      const validatePath = (pathName: string, lonKey: keyof NavigationRecord, latKey: keyof NavigationRecord) => {
          const validCartesians: Cesium.Cartesian3[] = [];
          let lastLat = 0, lastLon = 0;
          for (let i = 0; i < data.length; i++) {
              const d = data[i];
-             const lat = d[latKey];
-             const lon = d[lonKey];
+             const lat = d[latKey] as number;
+             const lon = d[lonKey] as number;
              
              if (i > 0) {
                  // Haversine approx for distance check
@@ -96,22 +96,22 @@ export const CesiumMap: React.FC<CesiumMapProps> = ({ data, currentTimeIndex, on
                  
                  // If the aircraft jumps more than 500 meters in 0.1 seconds (5000m/s = mach 15+), it's a data discontinuity
                  if (distance > 500) {
-                    console.warn(`ABNORMAL JUMP DETECTED in ${pathName} at t=${d.time}s`);
+                    console.warn(`ABNORMAL JUMP DETECTED in ${pathName} at t=${d.timestamp}s`);
                     console.warn(`Prev: [${lastLat}, ${lastLon}] -> Curr: [${lat}, ${lon}]`);
                     console.warn(`Distance jumped physically impossible: ${distance.toFixed(1)} meters.`);
                     break; // Terminate line drawing at anomaly as per standard safety procedure
                  }
              }
-             validCartesians.push(Cesium.Cartesian3.fromDegrees(lon, lat, d.alt));
+             validCartesians.push(Cesium.Cartesian3.fromDegrees(lon, lat, d.estimated_alt));
              lastLat = lat;
              lastLon = lon;
          }
          return validCartesians;
       };
 
-      const refCartesians = validatePath('REFERENCE', 'refLon', 'refLat');
-      const insCartesians = validatePath('INS', 'insLon', 'insLat');
-      const ekfCartesians = validatePath('TAN+EKF', 'ekfLon', 'ekfLat');
+      const refCartesians = validatePath('REFERENCE', 'truth_lon', 'truth_lat');
+      const insCartesians = validatePath('INS', 'ins_lon', 'ins_lat');
+      const ekfCartesians = validatePath('TAN+EKF', 'estimated_lon', 'estimated_lat');
 
       // Initialize Entities using CallbackProperty to prevent React buffer rebuilds!
       refPathRef.current = viewer.entities.add({
@@ -181,13 +181,24 @@ export const CesiumMap: React.FC<CesiumMapProps> = ({ data, currentTimeIndex, on
     const currentState = data[currentTimeIndex];
     if (!currentState) return;
     
-    const currentCartesian = Cesium.Cartesian3.fromDegrees(currentState.ekfLon, currentState.ekfLat, currentState.alt);
+    const currentCartesian = Cesium.Cartesian3.fromDegrees(currentState.estimated_lon, currentState.estimated_lat, currentState.estimated_alt);
 
     if (aircraftRef.current) {
         aircraftRef.current.position = new Cesium.ConstantPositionProperty(currentCartesian);
         
+        let hdg = 0;
+        if (currentTimeIndex > 0) {
+            const prev = data[currentTimeIndex - 1];
+            const dy = currentState.estimated_lon - prev.estimated_lon;
+            const dx = currentState.estimated_lat - prev.estimated_lat;
+            if (dx !== 0 || dy !== 0) {
+                hdg = (Math.atan2(dy, dx) * 180 / Math.PI);
+                if (hdg < 0) hdg += 360;
+            }
+        }
+        
         if (aircraftRef.current.billboard) {
-            aircraftRef.current.billboard.rotation = new Cesium.ConstantProperty(-Cesium.Math.toRadians(currentState.hdg));
+            aircraftRef.current.billboard.rotation = new Cesium.ConstantProperty(-Cesium.Math.toRadians(hdg));
         }
     }
 
@@ -197,9 +208,10 @@ export const CesiumMap: React.FC<CesiumMapProps> = ({ data, currentTimeIndex, on
     // Using ConstantProperty to ensure it doesn't jump
     const ENHANCED_OBLIQUE_OFFSET = new Cesium.Cartesian3(0.0, -1000.0, 1500.0);
     
-    if (viewer.trackedEntity !== aircraftRef.current) {
-        viewer.trackedEntity = aircraftRef.current;
-        aircraftRef.current.viewFrom = new Cesium.ConstantProperty(ENHANCED_OBLIQUE_OFFSET);
+    const aircraft = aircraftRef.current;
+    if (aircraft && viewer.trackedEntity !== aircraft) {
+        viewer.trackedEntity = aircraft;
+        aircraft.viewFrom = new Cesium.ConstantProperty(ENHANCED_OBLIQUE_OFFSET);
     }
 
   }, [data, currentTimeIndex, hasError]);

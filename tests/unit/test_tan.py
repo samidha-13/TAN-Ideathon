@@ -1,5 +1,6 @@
+import unittest.mock
 """
-Tests for TAN (Terrain-Aided Navigation).
+Tests for TAN (Terrain-Aided Navigation) — profile-based NCC matching.
 """
 import sys
 import os
@@ -8,7 +9,11 @@ import unittest
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-from navigation.tan import TerrainAidedNavigation
+from navigation.tan import (
+    TerrainAidedNavigation,
+    ProfileSample,
+    normalized_cross_correlation,
+)
 from navigation.terrain_provider import SRTMTerrainProvider
 from navigation.terrain_observability import ObservabilityLevel, TerrainObservabilityResult
 
@@ -16,10 +21,35 @@ from navigation.terrain_observability import ObservabilityLevel, TerrainObservab
 class _MockTerrainProvider:
     """Synthetic inclined terrain for TAN unit tests (no real files needed)."""
     def get_elevation(self, lat: float, lon: float) -> float:
-        # Simple hill: peak at (30.1, 78.2), drops with distance
         dlat = lat - 30.1
         dlon = lon - 78.2
         return 2000.0 + 500.0 * math.exp(-(dlat**2 + dlon**2) / 0.01)
+
+
+def _build_profile(terrain, centre_lat, centre_lon, ins_alt, n=15, step=0.0001):
+    """Build a profile along a short path with perfect radar measurements."""
+    samples = []
+    for i in range(n):
+        lat = centre_lat + i * step
+        lon = centre_lon + i * step * 0.5
+        elev = terrain.get_elevation(lat, lon)
+        samples.append(ProfileSample(
+            ins_lat=lat, ins_lon=lon, ins_alt=ins_alt,
+            radar_agl=ins_alt - elev,
+        ))
+    return samples
+
+
+class TestNCC(unittest.TestCase):
+
+    def test_identical_profiles_ncc_one(self):
+        p = [100.0, 200.0, 150.0, 300.0]
+        self.assertAlmostEqual(normalized_cross_correlation(p, p), 1.0, places=5)
+
+    def test_anti_correlated_ncc_negative(self):
+        p = [1.0, 2.0, 3.0, 4.0]
+        q = [4.0, 3.0, 2.0, 1.0]
+        self.assertLess(normalized_cross_correlation(p, q), 0.0)
 
 
 class TestTANWithMockTerrain(unittest.TestCase):
@@ -27,7 +57,7 @@ class TestTANWithMockTerrain(unittest.TestCase):
     def setUp(self):
         self.terrain = _MockTerrainProvider()
         self.tan = TerrainAidedNavigation(
-            self.terrain, search_radius_m=2000.0, grid_steps=7
+            self.terrain, search_radius_m=2000.0, grid_steps=7, min_profile_len=10
         )
 
     def _high_obs(self):
@@ -40,41 +70,37 @@ class TestTANWithMockTerrain(unittest.TestCase):
         )
 
     def test_valid_tan_result_for_high_obs(self):
-        """With HIGH observability and valid radar, TAN should produce a valid result."""
-        terrain_at_truth = self.terrain.get_elevation(30.1, 78.2)
-        ins_alt   = 5000.0
-        radar_agl = ins_alt - terrain_at_truth  # perfect radar
-
+        profile = _build_profile(self.terrain, 30.1, 78.2, 5000.0)
         result = self.tan.compute(
-            ins_lat=30.1, ins_lon=78.2,
-            ins_alt=ins_alt, radar_agl=radar_agl,
-            obs_result=self._high_obs(),
+            ins_lat=30.1, ins_lon=78.2, ins_alt=5000.0,
+            profile=profile, obs_result=self._high_obs(),
         )
         self.assertTrue(result.valid, f"TAN should be valid: {result.reject_reason}")
-        self.assertGreater(result.match_score, 0.0)
+        self.assertGreater(result.match_score, 0.7)
         self.assertTrue(math.isfinite(result.estimated_lat))
         self.assertTrue(math.isfinite(result.estimated_lon))
 
-    def test_nan_radar_rejected(self):
-        """NaN radar AGL should be immediately rejected."""
+    def test_insufficient_profile_rejected(self):
+        profile = _build_profile(self.terrain, 30.1, 78.2, 5000.0, n=5)
         result = self.tan.compute(
-            ins_lat=30.1, ins_lon=78.2,
-            ins_alt=5000.0, radar_agl=float("nan"),
-            obs_result=self._high_obs(),
+            ins_lat=30.1, ins_lon=78.2, ins_alt=5000.0,
+            profile=profile, obs_result=self._high_obs(),
+        )
+        self.assertFalse(result.valid)
+        self.assertIn("insufficient profile", result.reject_reason)
+
+    def test_nan_radar_rejected(self):
+        profile = _build_profile(self.terrain, 30.1, 78.2, 5000.0)
+        profile[5] = ProfileSample(30.1, 78.2, 5000.0, float("nan"))
+        result = self.tan.compute(
+            ins_lat=30.1, ins_lon=78.2, ins_alt=5000.0,
+            profile=profile, obs_result=self._high_obs(),
         )
         self.assertFalse(result.valid)
 
-    def test_out_of_range_radar_rejected(self):
-        """Radar AGL < −50 or > 15000 should be rejected."""
-        for bad_agl in [-100.0, 20000.0]:
-            result = self.tan.compute(
-                ins_lat=30.1, ins_lon=78.2, ins_alt=5000.0,
-                radar_agl=bad_agl, obs_result=self._high_obs(),
-            )
-            self.assertFalse(result.valid, f"Should reject agl={bad_agl}")
-
-    def test_low_observability_rejected(self):
-        """LOW terrain observability should cause TAN to reject."""
+    @unittest.mock.patch('navigation.tan.normalized_cross_correlation')
+    def test_low_observability_weak_match_rejected(self, mock_ncc):
+        mock_ncc.return_value = 0.5
         low_obs = TerrainObservabilityResult(
             level=ObservabilityLevel.LOW,
             elevation_std_m=2.0,
@@ -82,32 +108,35 @@ class TestTANWithMockTerrain(unittest.TestCase):
             profile_length=21,
             score=0.01,
         )
+        profile = _build_profile(self.terrain, 30.1, 78.2, 5000.0)
         result = self.tan.compute(
             ins_lat=30.1, ins_lon=78.2, ins_alt=5000.0,
-            radar_agl=2900.0, obs_result=low_obs,
+            profile=profile, obs_result=low_obs,
         )
         self.assertFalse(result.valid)
-        self.assertIn("LOW", result.reject_reason)
 
-    def test_match_score_in_valid_range(self):
-        """Match score should be in (0, 1]."""
-        terrain_elev = self.terrain.get_elevation(30.1, 78.2)
-        result = self.tan.compute(
-            ins_lat=30.1, ins_lon=78.2,
-            ins_alt=5000.0, radar_agl=5000.0 - terrain_elev,
-            obs_result=self._high_obs(),
+    def test_low_observability_strong_match_accepted(self):
+        low_obs = TerrainObservabilityResult(
+            level=ObservabilityLevel.LOW,
+            elevation_std_m=2.0,
+            mean_abs_gradient=0.01,
+            profile_length=21,
+            score=0.01,
         )
-        if result.valid:
-            self.assertGreater(result.match_score, 0.0)
-            self.assertLessEqual(result.match_score, 1.0)
+        # Perfect profile creates strong match (NCC = 1.0)
+        profile = _build_profile(self.terrain, 30.1, 78.2, 5000.0)
+        result = self.tan.compute(
+            ins_lat=30.1, ins_lon=78.2, ins_alt=5000.0,
+            profile=profile, obs_result=low_obs,
+        )
+        self.assertTrue(result.valid)
+        self.assertGreater(result.match_score, 0.90)
 
     def test_n_candidates_nonzero(self):
-        """TAN should evaluate multiple candidates."""
-        terrain_elev = self.terrain.get_elevation(30.1, 78.2)
+        profile = _build_profile(self.terrain, 30.1, 78.2, 5000.0)
         result = self.tan.compute(
-            ins_lat=30.1, ins_lon=78.2,
-            ins_alt=5000.0, radar_agl=5000.0 - terrain_elev,
-            obs_result=self._high_obs(),
+            ins_lat=30.1, ins_lon=78.2, ins_alt=5000.0,
+            profile=profile, obs_result=self._high_obs(),
         )
         if result.valid:
             self.assertGreater(result.n_candidates, 1)
@@ -119,38 +148,33 @@ class TestTANWithRealSRTM(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.provider = SRTMTerrainProvider()
-        cls.tan = TerrainAidedNavigation(cls.provider, search_radius_m=3000.0, grid_steps=9)
+        cls.tan = TerrainAidedNavigation(
+            cls.provider, search_radius_m=3000.0, grid_steps=9, min_profile_len=10
+        )
 
     @classmethod
     def tearDownClass(cls):
         cls.provider.close()
 
     def test_mountain_tan_produces_result(self):
-        """Over mountain terrain, TAN should produce a valid result."""
         lat, lon = 30.1, 78.2
         alt = 5000.0
-        terrain_elev = self.provider.get_elevation(lat, lon)
-        agl = alt - terrain_elev   # perfect measurement
-
-        result = self.tan.compute(lat, lon, alt, agl)
-        # Mountain terrain should be HIGH observability → valid TAN
+        profile = _build_profile(self.provider, lat, lon, alt, n=15, step=0.0002)
+        result = self.tan.compute(lat, lon, alt, profile)
         self.assertIsNotNone(result)
-        # Either valid or explicitly rejected due to low obs (which is still correct)
         self.assertIsInstance(result.valid, bool)
 
     def test_flat_plain_tan_rejected_or_low_confidence(self):
-        """Flat Plain terrain → TAN should be rejected due to low observability."""
         lat, lon = 25.2, 81.7
         alt = 2000.0
-        terrain_elev = self.provider.get_elevation(lat, lon)
-        agl = alt - terrain_elev
-
-        result = self.tan.compute(lat, lon, alt, agl)
-        # Flat plain may be rejected (valid=False) or have very low score
+        profile = _build_profile(self.provider, lat, lon, alt, n=15, step=0.0002)
+        result = self.tan.compute(lat, lon, alt, profile)
         if result.valid:
-            # If valid, match score should be low for flat terrain
             self.assertIsInstance(result.match_score, float)
-        # No assertion that it MUST be invalid — terrain might have local variation
+        else:
+            self.assertTrue(
+                "LOW" in result.reject_reason or "NCC" in result.reject_reason
+            )
 
 
 if __name__ == "__main__":

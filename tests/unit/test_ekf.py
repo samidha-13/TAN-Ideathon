@@ -53,17 +53,18 @@ class TestEKFGNSSUpdate(unittest.TestCase):
         self.assertNotAlmostEqual(corr[1], 0.0, places=8)
 
     def test_gnss_apply_correction(self):
-        """apply_correction_to_ins should return corrected position."""
+        """get_correction should return 9-state correction."""
         ekf = NavigationEKF(q_pos_deg=1e-6)
         ekf.predict()
         ekf.update_gnss(
             ins_lat=30.0, ins_lon=78.0, ins_alt=5000.0,
             gnss_lat=30.01, gnss_lon=78.01, gnss_alt=5100.0,
         )
-        c_lat, c_lon, c_alt = ekf.apply_correction_to_ins(30.0, 78.0, 5000.0)
-        # Corrected position should be shifted towards GNSS observation
-        self.assertGreater(c_lat, 30.0)
-        self.assertGreater(c_lon, 78.0)
+        corr = ekf.get_correction()
+        self.assertEqual(len(corr), 9)
+        # Lat/Lon corrections should be towards the GNSS observation
+        self.assertGreater(corr[0], 0.0)
+        self.assertGreater(corr[1], 0.0)
 
     def test_gnss_update_decreases_uncertainty(self):
         """After a GNSS update, position uncertainty should be lower."""

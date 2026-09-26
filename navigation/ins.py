@@ -185,19 +185,25 @@ class INSPropagator:
 
         return s
 
-    def reset_position(
+    def apply_corrections(
         self,
-        lat: float,
-        lon: float,
-        alt: float,
+        lat: float, lon: float, alt: float,
+        d_vn: float, d_ve: float, d_vd: float,
+        d_roll: float, d_pitch: float, d_yaw: float
     ) -> None:
         """
-        Reset the INS position (e.g., after EKF correction).
-        Does NOT reset velocity or attitude — only position.
+        Apply full state corrections (closed-loop).
         """
         self.state.latitude  = lat
         self.state.longitude = lon
         self.state.altitude  = alt
+        self.state.vel_north += d_vn
+        self.state.vel_east += d_ve
+        self.state.vel_down += d_vd
+        self.state.roll += d_roll
+        self.state.pitch += d_pitch
+        self.state.yaw += d_yaw
+        self.state.yaw = _wrap_angle(self.state.yaw)
         self.state.pos_drift_m = 0.0
         # Re-anchor flat-Earth reference
         self._ref_lat = lat

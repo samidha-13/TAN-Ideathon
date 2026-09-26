@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useMemo, useRef } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Play, Pause, RotateCcw, Home, Activity, Target, AlignLeft, Settings, Mountain, ShieldAlert, ChevronRight } from 'lucide-react';
-import { missions } from '../demo/missions';
-import { generateMissionData } from '../demo/demoReplay';
+import { loadMissions, loadNavigationData, type MissionInfo, type NavigationRecord } from '../services/dataService';
+import { missions as staticMissions } from '../demo/missions';
 import Map3D from './Map3D';
 import { CesiumMap } from './CesiumMap';
 
@@ -9,37 +9,68 @@ import { CesiumMap } from './CesiumMap';
 const planeSvgPath = "M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z";
 
 export const Dashboard: React.FC = () => {
-  const [activeMissionId, setActiveMissionId] = useState('mountain');
+  const [missions, setMissions] = useState<MissionInfo[]>([]);
+  const [activeMissionId, setActiveMissionId] = useState('mountain_mission');
   const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [currentTimeIndex, setCurrentTimeIndex] = useState(0);
   const [activeTab, setActiveTab] = useState('OVERVIEW');
-  const [cesiumCrashed, setCesiumCrashed] = useState(false);
+  const [, setCesiumCrashed] = useState(false);
+  const [missionData, setMissionData] = useState<NavigationRecord[]>([]);
+  const [backendError, setBackendError] = useState<string | null>(null);
 
-  const mission = missions[activeMissionId];
-  const missionData = useMemo(() => generateMissionData(mission.waypoints, 200, 10), [mission]);
+  useEffect(() => {
+    loadMissions()
+      .then(m => {
+        setMissions(m);
+        if (m.length > 0 && !m.find(x => x.id === activeMissionId)) {
+          setActiveMissionId(m[0].id);
+        }
+        setBackendError(null);
+      })
+      .catch(() => setBackendError('BACKEND OFFLINE'));
+  }, []);
+
+  useEffect(() => {
+    if (!activeMissionId || backendError) return;
+    setMissionData([]);
+    setCurrentTimeIndex(0);
+    setIsPlaying(false);
+    loadNavigationData(activeMissionId)
+      .then(data => {
+        setMissionData(data);
+        setCurrentTimeIndex(0);
+        setIsPlaying(false);
+        setBackendError(null);
+      })
+      .catch(() => setBackendError('BACKEND OFFLINE'));
+  }, [activeMissionId]);
 
   useEffect(() => {
     let interval: number;
-    if (isPlaying && currentTimeIndex < missionData.length - 1) {
+    if (isPlaying && missionData.length > 0 && currentTimeIndex < missionData.length - 1) {
       interval = window.setInterval(() => {
         setCurrentTimeIndex(t => Math.min(t + 1, missionData.length - 1));
-      }, 50); // fast playback
+      }, 100 / playbackSpeed); // source records are 10 Hz; speed only changes traversal rate
     } else if (currentTimeIndex >= missionData.length - 1) {
       setIsPlaying(false);
     }
     return () => window.clearInterval(interval);
-  }, [isPlaying, currentTimeIndex, missionData.length]);
+  }, [isPlaying, currentTimeIndex, missionData.length, playbackSpeed]);
 
-  const state = missionData[currentTimeIndex];
+  const state = missionData[currentTimeIndex] || null;
+  const configKey = activeMissionId.replace('_mission', '');
+  const missionConfig = staticMissions[configKey] || staticMissions['mountain'];
 
   // Fetch heightmap to render actual real SRTM terrain profile in TAN INFO
   const [heightmap, setHeightmap] = useState<any>(null);
   useEffect(() => {
-    fetch(mission.terrainSource)
+    if (!missionConfig) return;
+    fetch(missionConfig.terrainSource)
       .then(r => r.json())
       .then(h => setHeightmap(h))
       .catch(e => console.error(e));
-  }, [mission.terrainSource]);
+  }, [missionConfig]);
 
   let terrainElev = 1500;
   let terrainProfilePts = "";
@@ -57,7 +88,58 @@ export const Dashboard: React.FC = () => {
       }
       terrainProfilePts = pts.join(' ');
   }
-  const agl = Math.max(0, state.alt - terrainElev);
+  const agl = state ? Math.max(0, state.estimated_alt - terrainElev) : 0;
+  const MPS_TO_KT = 1.94384;
+  const ias = (state?.ground_speed_mps ?? 0) * MPS_TO_KT;
+  const vs = (state?.vertical_speed_mps ?? 0) * 196.85; // m/s → ft/min
+  const turnRate = state?.turn_rate_dps ?? 0;
+  const gLoad = state?.g_load ?? 1.0;
+  
+  // Backend-generated events (non-empty event field on NavigationRecord)
+  const backendEvents = useMemo(() => {
+    const seen = new Set<string>();
+    return missionData
+      .filter(r => r.event && r.event.trim().length > 0)
+      .flatMap(r => r.event.split(' | ').map(msg => ({ time: r.timestamp, msg })))
+      .filter(e => {
+        const key = `${e.time.toFixed(1)}:${e.msg}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+  }, [missionData]);
+
+  const visibleEvents = useMemo(
+    () => backendEvents.filter(e => e.time <= (state?.timestamp ?? 0)),
+    [backendEvents, state?.timestamp]
+  );
+  const missionStart = missionData[0]?.timestamp ?? 0;
+  const missionEnd = missionData[missionData.length - 1]?.timestamp ?? missionStart;
+  const missionDuration = Math.max(missionEnd - missionStart, 0.001);
+  const latestEvent = visibleEvents[visibleEvents.length - 1];
+  let hdg = 0;
+  if (state && currentTimeIndex > 0) {
+     const prev = missionData[currentTimeIndex - 1];
+     const dy = state.estimated_lon - prev.estimated_lon;
+     const dx = state.estimated_lat - prev.estimated_lat;
+     if (dx !== 0 || dy !== 0) {
+        hdg = (Math.atan2(dy, dx) * 180 / Math.PI);
+        if (hdg < 0) hdg += 360;
+     }
+  }
+
+  const fdiRadarColor = (status: string) => {
+    if (status === 'ISOLATED') return 'text-red-500';
+    if (status === 'SUSPECTED') return 'text-orange-500';
+    return 'text-green-500';
+  };
+
+  if (backendError) {
+    return <div className="flex items-center justify-center h-screen bg-black text-red-500 text-2xl font-mono">{backendError}</div>;
+  }
+  if (!state) {
+    return <div className="flex items-center justify-center h-screen bg-black text-white text-xl font-mono">Loading Navigation Data...</div>;
+  }
 
   return (
     <div className="flex flex-col h-screen bg-[#05070a] text-slate-200 overflow-hidden font-sans uppercase">
@@ -83,7 +165,7 @@ export const Dashboard: React.FC = () => {
                  setCesiumCrashed(false);
                }}
              >
-               {Object.keys(missions).map(k => <option className="bg-slate-900" key={k} value={k}>{missions[k].name.toUpperCase()}</option>)}
+               {missions.map(m => <option className="bg-slate-900" key={m.id} value={m.id}>{m.name.toUpperCase()}</option>)}
              </select>
           </div>
           
@@ -91,7 +173,7 @@ export const Dashboard: React.FC = () => {
 
           <div className="flex flex-col gap-1">
              <span className="text-[10px] text-gray-400 tracking-widest">SCENARIO</span>
-             <span className="text-[#ef4444] font-bold text-sm tracking-wider">GNSS DENIED</span>
+             <span className="text-[#ef4444] font-bold text-sm tracking-wider">{state.gnss_accepted ? 'FULL AID' : 'GNSS DENIED'}</span>
           </div>
           
           <div className="w-px h-10 bg-[#2a2d36]"></div>
@@ -103,7 +185,7 @@ export const Dashboard: React.FC = () => {
 
           <div className="flex flex-col gap-1">
              <span className="text-[10px] text-gray-400 tracking-widest">RUN TIME</span>
-             <span className="font-mono text-white text-sm">{Math.floor(state.time / 60).toString().padStart(2, '0')}:{(state.time % 60).toFixed(1).padStart(4, '0')}</span>
+             <span className="font-mono text-white text-sm">{Math.floor(state.timestamp / 60).toString().padStart(2, '0')}:{(state.timestamp % 60).toFixed(1).padStart(4, '0')}</span>
           </div>
         </div>
 
@@ -114,14 +196,25 @@ export const Dashboard: React.FC = () => {
           <button onClick={() => { setCurrentTimeIndex(0); setIsPlaying(false); }} className="hover:bg-gray-800 transition-colors px-4 py-2 rounded-[4px] border border-[#2a2d36] flex items-center gap-2 text-[11px] font-bold tracking-widest text-[#d1d5db]">
             <RotateCcw size={14} /> RESET
           </button>
+          <select aria-label="Playback speed" value={playbackSpeed} onChange={(e) => setPlaybackSpeed(Number(e.target.value))} className="bg-[#0c1015] border border-[#2a2d36] rounded px-2 py-2 text-[11px] font-mono text-[#d1d5db]">
+            {[1, 2, 5, 10].map(speed => <option key={speed} value={speed}>{speed}x</option>)}
+          </select>
         </div>
       </header>
+
+      <section className="h-14 shrink-0 bg-[#080b0f] border-b border-[#2a2d36] px-6 py-2 font-mono">
+        <div className="flex justify-between text-[10px] text-slate-400 mb-1"><span>PLAYBACK TIMELINE</span><span>{state.timestamp.toFixed(1)}s / {missionEnd.toFixed(1)}s {latestEvent ? `— ${latestEvent.msg}` : ''}</span></div>
+        <div className="relative h-5">
+          <input aria-label="Mission timeline" type="range" min="0" max={Math.max(missionData.length - 1, 0)} value={currentTimeIndex} onChange={(e) => { setCurrentTimeIndex(Number(e.target.value)); setIsPlaying(false); }} className="absolute inset-x-0 top-1 w-full accent-lime-400" />
+          {backendEvents.map((event, index) => <button key={`${event.time}-${index}`} title={`${event.time.toFixed(1)}s — ${event.msg}`} onClick={() => { const target = missionData.findIndex(r => r.timestamp >= event.time); if (target >= 0) { setCurrentTimeIndex(target); setIsPlaying(false); } }} className="absolute top-0 z-10 h-4 w-1 bg-orange-400 hover:bg-white" style={{ left: `${((event.time - missionStart) / missionDuration) * 100}%` }} />)}
+        </div>
+      </section>
 
       {/* 2. Main Flight Displays */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left: Pilot Forward HUD (55%) */}
         <div className="w-[55%] relative overflow-hidden bg-black shrink-0 border-r border-[#2a2d36]">
-          <Map3D mission={mission} data={missionData} currentTimeIndex={currentTimeIndex} mode="hud" />
+          <Map3D mission={missionConfig} data={missionData} currentTimeIndex={currentTimeIndex} mode="hud" />
           
           {/* Overlays on HUD directly mimicking reference */}
           
@@ -129,13 +222,13 @@ export const Dashboard: React.FC = () => {
           <div className="absolute top-4 left-1/2 -translate-x-1/2 flex flex-col items-center z-10 w-80">
             <div className="flex items-center gap-2 text-[11px] font-mono tracking-widest mb-1">
                <span className="text-[#a3e635]">HDG</span>
-               <span className="text-white text-lg bg-[#0e161f] border border-gray-700/50 px-2 leading-tight">{state.hdg.toFixed(0)}</span>
+               <span className="text-white text-lg bg-[#0e161f] border border-gray-700/50 px-2 leading-tight">{hdg.toFixed(0)}</span>
                <span className="text-[#a3e635]">MAG</span>
             </div>
             
             <div className="relative w-full h-8 overflow-hidden font-mono text-[10px] text-white">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-transparent border-t-white"></div>
-                <div className="flex absolute bottom-0 gap-[36px]" style={{ transform: `translateX(calc(50% - ${state.hdg * 4}px))` }}>
+                <div className="flex absolute bottom-0 gap-[36px]" style={{ transform: `translateX(calc(50% - ${hdg * 4}px))` }}>
                   {Array.from({length: 72}).map((_, i) => (
                       <div key={i} className="flex flex-col items-center w-[4px] shrink-0">
                           {i%3===0 ? <span className="mb-px">{i * 10}</span> : <div className="h-1"></div>}
@@ -153,7 +246,7 @@ export const Dashboard: React.FC = () => {
              <div className="flex-1 relative flex">
                  {/* Current IAS Box overlaid on center */}
                  <div className="absolute left-[-16px] top-1/2 -translate-y-1/2 bg-black border border-gray-600 px-2 py-1 text-base z-20 w-[60px] text-right">
-                    {state.ias.toFixed(0)}
+                    {ias.toFixed(0)}
                     <div className="absolute -right-2 top-1/2 -translate-y-1/2 w-0 h-0 border-y-4 border-y-transparent border-l-[6px] border-l-gray-600"></div>
                  </div>
                  
@@ -162,14 +255,14 @@ export const Dashboard: React.FC = () => {
                      {/* Pseudo moving ticks (simulated) */}
                      {[-30, -20, -10, 0, 10, 20, 30].map(v => (
                          <div key={v} className="h-8 flex flex-col justify-end items-end relative w-full text-gray-300">
-                             {(state.ias + v) > 0 && Math.floor((state.ias + v)/10)*10}
+                             {(ias + v) > 0 && Math.floor((ias + v)/10)*10}
                              <div className="absolute bottom-0 right-[-8px] w-3 h-[2px] bg-[#a3e635]"></div>
                              <div className="absolute bottom-4 right-[-8px] w-2 h-[1px] bg-[#a3e635]"></div>
                          </div>
                      ))}
                  </div>
              </div>
-             <div className="text-[#a3e635] text-[10px] mt-2 whitespace-nowrap">GS {state.ias.toFixed(0)} KT</div>
+             <div className="text-[#a3e635] text-[10px] mt-2 whitespace-nowrap">GS {ias.toFixed(0)} KT</div>
           </div>
 
           {/* Right ALT Block */}
@@ -178,7 +271,7 @@ export const Dashboard: React.FC = () => {
              <div className="flex-1 relative flex">
                  {/* Current ALT Box */}
                  <div className="absolute right-[-16px] top-1/2 -translate-y-1/2 bg-black border border-gray-600 px-2 py-1 text-base z-20 w-[68px] text-left">
-                    {state.alt.toFixed(0)}
+                    {state.estimated_alt.toFixed(0)}
                     <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-0 h-0 border-y-4 border-y-transparent border-r-[6px] border-r-gray-600"></div>
                  </div>
                  
@@ -186,7 +279,7 @@ export const Dashboard: React.FC = () => {
                  <div className="flex-1 border-l-2 border-[#a3e635] relative overflow-hidden flex flex-col justify-center items-start pl-2 text-xs">
                      {[-300, -200, -100, 0, 100, 200, 300].map(v => (
                          <div key={v} className="h-8 flex flex-col justify-end items-start relative w-full text-gray-300">
-                             {(state.alt + v) > 0 && Math.floor((state.alt + v)/100)*100}
+                             {(state.estimated_alt + v) > 0 && Math.floor((state.estimated_alt + v)/100)*100}
                              <div className="absolute bottom-0 left-[-8px] w-3 h-[2px] bg-[#a3e635]"></div>
                              <div className="absolute bottom-4 left-[-8px] w-2 h-[1px] bg-[#a3e635]"></div>
                          </div>
@@ -196,7 +289,7 @@ export const Dashboard: React.FC = () => {
              
              {/* Vertical speed bug mockup outside scale */}
              <div className="absolute top-1/2 -translate-y-1/2 -right-12 bg-[#2a2d36] px-1 text-[10px] border border-gray-600 font-mono">
-                 {Math.round(state.vs / 100) * 100}
+                 {vs.toFixed(0)}
              </div>
 
              <div className="text-[#a3e635] text-[10px] mt-2 whitespace-nowrap text-right pr-2">AGL {agl.toFixed(0)} FT</div>
@@ -232,8 +325,8 @@ export const Dashboard: React.FC = () => {
           
           {/* Compass Rose (Bottom Center) */}
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-40 h-40 rounded-full border-2 border-white/50 bg-[#080d12]/30 flex items-center justify-center z-10 pointer-events-none">
-             <div className="absolute top-1 text-[11px] font-mono font-bold text-white bg-black/50 px-1 border border-white/40">{state.hdg.toFixed(0)}°</div>
-             <div className="absolute top-0 w-full h-full transform" style={{ transform: `rotate(${-state.hdg}deg)` }}>
+             <div className="absolute top-1 text-[11px] font-mono font-bold text-white bg-black/50 px-1 border border-white/40">{hdg.toFixed(0)}°</div>
+             <div className="absolute top-0 w-full h-full transform" style={{ transform: `rotate(${-hdg}deg)` }}>
                  {/* Mock ticks */}
                  <div className="absolute top-2 w-full text-center text-xs text-white font-mono">N</div>
                  <div className="absolute bottom-2 w-full text-center text-xs text-white font-mono transform rotate-180">S</div>
@@ -250,28 +343,27 @@ export const Dashboard: React.FC = () => {
 
           {/* HUD Warnings/Status */}
           <div className="absolute bottom-32 left-32 font-bold font-mono text-sm tracking-wider text-[#d946ef] text-center pointer-events-none drop-shadow-[0_2px_2px_rgba(0,0,0,1)]">
-             {state.gnssStatus === 'DENIED' ? <>GPS<br/>DENIED</> : ''}
+             {!state.gnss_accepted ? <>GPS<br/>DENIED</> : ''}
           </div>
           <div className="absolute bottom-32 right-32 font-bold font-mono text-sm tracking-wider text-[#d946ef] text-center pointer-events-none drop-shadow-[0_2px_2px_rgba(0,0,0,1)]">
-             {state.tanMatchScore > 50 ? <>TERRAIN<br/>MATCHING</> : ''}
+             {state.tan_valid ? <>TERRAIN<br/>MATCHING</> : ''}
           </div>
           
           {/* Nav Mode Box Left Bottom */}
           <div className="absolute bottom-6 left-6 border border-gray-600/50 bg-black/60 p-2 font-mono text-[10px] z-10 rounded-[4px] w-40 text-gray-300 pointer-events-none">
               <div className="mb-2">
                  <div className="text-gray-500 uppercase tracking-widest leading-tight">NAV MODE</div>
-                 <div className="text-[#a3e635] text-xs font-bold leading-none">{state.navMode.replace('_', ' ')}</div>
+                 <div className="text-[#a3e635] text-xs font-bold leading-none">{state.nav_mode.replace('_', ' ')}</div>
               </div>
               <div className="border-t border-gray-700 pt-1">
                  <div className="text-gray-400 capitalize tracking-wide mb-1">POS UNCERTAINTY (1σ)</div>
-                 <div className="flex justify-between text-[#d1d5db]"><span>HORIZ</span> <span>{(state.errorEkf * 0.8).toFixed(1)} m</span></div>
-                 <div className="flex justify-between text-[#d1d5db]"><span>VERT</span> <span>{(state.errorEkf * 0.4).toFixed(1)} m</span></div>
+                 <div className="flex justify-between text-[#d1d5db]"><span>HORIZ</span> <span>{Math.sqrt(state.uncertainty_lat_m**2 + state.uncertainty_lon_m**2).toFixed(1)} m</span></div>
+                 <div className="flex justify-between text-[#d1d5db]"><span>VERT</span> <span>{state.uncertainty_alt_m.toFixed(1)} m</span></div>
               </div>
           </div>
 
         </div>
 
-        {/* Right: 45% Tactical Mission Map */}
         <div className="flex-1 w-[45%] relative bg-[#0c1015] shrink-0 border-l px-[4px] py-[4px] border-[#2a2d36] overflow-hidden">
              <CesiumMap 
                 data={missionData} 
@@ -330,14 +422,14 @@ export const Dashboard: React.FC = () => {
       {/* 3. Bottom Flight Strip */}
       <div className="h-16 shrink-0 bg-[#080b0f] flex border-y border-[#2a2d36] items-center justify-between px-16 divide-x divide-[#2a2d36]">
         {[
-          { l: 'HDG', v: `${state.hdg.toFixed(0)}°`, c: 'text-[#4ade80]' },
-          { l: 'TRK', v: `${state.trk.toFixed(0)}°`, c: 'text-white' },
-          { l: 'IAS', v: `${state.ias.toFixed(0)} KT`, c: 'text-white' },
-          { l: 'ALT (MSL)', v: `${state.alt.toFixed(0)} FT`, c: 'text-white' },
+          { l: 'HDG', v: `${hdg.toFixed(0)}°`, c: 'text-[#4ade80]' },
+          { l: 'TRK', v: `${hdg.toFixed(0)}°`, c: 'text-white' },
+          { l: 'IAS', v: `${ias.toFixed(0)} KT`, c: 'text-white' },
+          { l: 'ALT (MSL)', v: `${state.estimated_alt.toFixed(0)} FT`, c: 'text-white' },
           { l: 'AGL', v: `${agl.toFixed(0)} FT`, c: 'text-white' },
-          { l: 'VS', v: `${state.vs.toFixed(0)} FPM`, c: 'text-white' },
-          { l: 'TURN RATE', v: `${state.turnRate.toFixed(1)} °/s`, c: 'text-white' },
-          { l: 'G LOAD', v: `${state.gLoad.toFixed(2)} g`, c: 'text-white' },
+          { l: 'VS', v: `${vs.toFixed(0)} FPM`, c: 'text-white' },
+          { l: 'TURN RATE', v: `${turnRate.toFixed(1)} °/s`, c: 'text-white' },
+          { l: 'G LOAD', v: `${gLoad.toFixed(2)} g`, c: 'text-white' },
         ].map((i, idx) => (
           <div key={idx} className="flex flex-col items-center flex-1">
              <span className="text-[10px] text-gray-400 tracking-widest mb-1">{i.l}</span>
@@ -358,6 +450,7 @@ export const Dashboard: React.FC = () => {
               { id: 'SYSTEM STATUS', icon: <Settings size={14}/> },
               { id: 'TAN / TERRAIN INFO', icon: <Mountain size={14}/> },
               { id: 'FDI SUMMARY', icon: <ShieldAlert size={14}/> },
+              { id: 'ML DETAILS', icon: <Activity size={14}/> },
             ].map((tab, idx) => (
               <button 
                 key={idx}
@@ -379,7 +472,7 @@ export const Dashboard: React.FC = () => {
               <div className="grid grid-cols-4 gap-6 h-full font-mono text-sm">
                   <div className="space-y-4 col-span-2">
                     <h3 className="text-slate-500 text-[10px] tracking-widest border-b border-slate-800 pb-1">3D POSITION ERROR</h3>
-                    <div className="text-xl text-orange-400">{state.errorEkf.toFixed(1)} <span className="text-xs">meters</span></div>
+                    <div className="text-xl text-orange-400">{state.error_3d_m.toFixed(1)} <span className="text-xs">meters</span></div>
                     {/* Position Error Graph */}
                     <div className="h-12 w-full bg-slate-900 border border-slate-800 rounded relative">
                        <svg width="100%" height="100%" preserveAspectRatio="none">
@@ -387,7 +480,7 @@ export const Dashboard: React.FC = () => {
                            fill="none" 
                            stroke="#f97316" 
                            strokeWidth="2" 
-                           points={missionData.slice(0, currentTimeIndex).map((d, i) => `${(i / missionData.length) * 100},${100 - (d.errorEkf / 3)}`).join(' ')}
+                           points={missionData.slice(0, currentTimeIndex).map((d, i) => `${(i / missionData.length) * 100},${100 - (d.error_3d_m / 3)}`).join(' ')}
                          />
                        </svg>
                        <div className="absolute inset-0 border-l border-b border-slate-700 pointer-events-none"></div>
@@ -396,7 +489,7 @@ export const Dashboard: React.FC = () => {
 
                   <div className="space-y-4">
                     <h3 className="text-slate-500 text-[10px] tracking-widest border-b border-slate-800 pb-1">INS DRIFT (DEAD RECKONING)</h3>
-                    <div className="text-lg text-fuchsia-500">{state.insDriftM.toFixed(1)} <span className="text-xs">meters</span></div>
+                    <div className="text-lg text-fuchsia-500">{state.ins_drift_m.toFixed(1)} <span className="text-xs">meters</span></div>
                     <p className="text-slate-600 text-[9px] text-justify pr-2 font-mono mt-1 leading-tight">
                       During GNSS denial, INS accumulates temporal drift. 
                     </p>
@@ -404,7 +497,7 @@ export const Dashboard: React.FC = () => {
 
                   <div className="space-y-4">
                     <h3 className="text-slate-500 text-[10px] tracking-widest border-b border-slate-800 pb-1">CURRENT EKF MODE</h3>
-                    <div className="text-lg text-[#4ade80]">{state.navMode.replace('_', ' ')}</div>
+                    <div className="text-lg text-[#4ade80]">{state.nav_mode.replace('_', ' ')}</div>
                   </div>
               </div>
             )}
@@ -414,17 +507,29 @@ export const Dashboard: React.FC = () => {
                  <div className="w-1/3 space-y-2">
                    <div className="flex justify-between items-center bg-slate-900 p-2 border border-slate-800">
                       <span className="text-white text-[10px]">GNSS RECEIVER</span>
-                      <span className={`text-[10px] font-bold ${state.gnssStatus === 'DENIED' ? 'text-red-500' : 'text-green-500'}`}>{state.gnssStatus}</span>
+                      <span className={`text-[10px] font-bold ${!state.gnss_accepted ? 'text-red-500' : 'text-green-500'}`}>{state.gnss_accepted ? 'AVAILABLE' : 'DENIED'}</span>
                    </div>
                    <div className="flex justify-between items-center bg-slate-900 p-2 border border-slate-800">
                       <span className="text-white text-[10px]">RADAR ALTIMETER</span>
-                      <span className={`text-[10px] font-bold ${state.radarStatus === 'FAULT' ? 'text-red-500' : state.radarStatus === 'ISOLATED' ? 'text-orange-500' : 'text-green-500'}`}>{state.radarStatus}</span>
+                      <span className={`text-[10px] font-bold ${fdiRadarColor(state.fdi_radar)}`}>{state.fdi_radar || 'ACCEPTED'}</span>
+                   </div>
+                   <div className="flex justify-between items-center bg-slate-900 p-2 border border-slate-800">
+                      <span className="text-white text-[10px]">MAGNETOMETER</span>
+                      <span className={`text-[10px] font-bold ${fdiRadarColor(state.fdi_mag)}`}>{state.fdi_mag || 'ACCEPTED'}</span>
                    </div>
                  </div>
                  <div className="w-1/3 space-y-2">
                    <div className="flex justify-between items-center bg-slate-900 p-2 border border-slate-800">
                       <span className="text-white text-[10px]">INERTIAL (INS)</span>
                       <span className="text-[10px] font-bold text-green-500">ACTIVE</span>
+                   </div>
+                   <div className="flex justify-between items-center bg-slate-900 p-2 border border-slate-800">
+                      <span className="text-white text-[10px]">MAGNAV AID</span>
+                      <span className={`text-[10px] font-bold ${state.magnav_available ? 'text-green-500' : 'text-slate-500'}`}>{state.magnav_available ? state.magnav_quality : 'UNAVAILABLE'}</span>
+                   </div>
+                   <div className="flex justify-between items-center bg-slate-900 p-2 border border-slate-800">
+                      <span className="text-white text-[10px]">ML ANOMALY MONITOR</span>
+                      <span className={`text-[10px] font-bold ${state.ml_status === 'ANOMALOUS' ? 'text-orange-400' : state.ml_status === 'NORMAL' ? 'text-green-500' : 'text-slate-500'}`}>{state.ml_status || 'UNAVAILABLE'} {state.ml_score === null ? '' : `(${state.ml_score.toFixed(3)})`}</span>
                    </div>
                  </div>
               </div>
@@ -439,12 +544,14 @@ export const Dashboard: React.FC = () => {
                     </div>
                     <div>
                       <div className="text-[9px] text-slate-500 mb-1 tracking-widest">OBSERVABILITY</div>
-                      <div className="text-[10px] text-green-400">{state.terrainObs.toFixed(1)}%</div>
+                      <div className="text-[10px] text-green-400">{state.terrain_obs}</div>
                     </div>
                     <div>
                       <div className="text-[9px] text-slate-500 mb-1 tracking-widest">MATCH SCORE</div>
                       <div className="text-[10px] text-green-400">
-                         {state.radarStatus === 'FAULT' || state.radarStatus === 'ISOLATED' || state.tanMatchScore === 0 ? 'N/A' : state.tanMatchScore.toFixed(1)}
+                         {!state.radar_accepted || state.fdi_radar === 'ISOLATED' || state.fdi_radar === 'SUSPECTED'
+                           ? 'N/A'
+                           : state.tan_match_score.toFixed(3)}
                       </div>
                     </div>
                  </div>
@@ -468,20 +575,52 @@ export const Dashboard: React.FC = () => {
             {activeTab === 'EVENT LOG' && (
               <div className="font-mono text-[10px] space-y-1 overflow-y-auto">
                  <div className="flex gap-4 opacity-50"><span className="text-cyan-600">00.0</span> <span className="text-slate-400">MISSION START</span></div>
-                 {state.time >= 10 && <div className="flex gap-4"><span className="text-cyan-600">10.0</span> <span className="text-red-500">GNSS SIGNAL DENIED / JAMMED</span></div>}
-                 {state.time >= 30 && <div className="flex gap-4"><span className="text-cyan-600">30.0</span> <span className="text-orange-400">INS DRIFT INCREASING</span></div>}
-                 {state.time >= 55 && <div className="flex gap-4"><span className="text-cyan-600">55.0</span> <span className="text-blue-400">TERRAIN MATCH SEARCH INITIATED</span></div>}
-                 {state.time >= 75 && <div className="flex gap-4"><span className="text-cyan-600">75.0</span> <span className="text-green-400">TAN CORRECTION ACTIVE</span></div>}
-                 {state.time >= 120 && <div className="flex gap-4"><span className="text-cyan-600">120.0</span> <span className="text-red-500">RADAR ALTIMETER FAULT</span></div>}
-                 {state.time >= 140 && <div className="flex gap-4"><span className="text-cyan-600">140.0</span> <span className="text-orange-400">FDI ISOLATES RADAR</span></div>}
-                 {state.time >= 160 && <div className="flex gap-4"><span className="text-cyan-600">160.0</span> <span className="text-green-400">RADAR RECOVERED</span></div>}
-                 {state.time >= 180 && <div className="flex gap-4"><span className="text-cyan-600">180.0</span> <span className="text-green-400">TAN+EKF AID RESTORED</span></div>}
+                 {visibleEvents.map((e, i) => (
+                   <div key={i} className="flex gap-4">
+                     <span className="text-cyan-600">{e.time.toFixed(1).padStart(5, '0')}</span>
+                     <span className={
+                       e.msg.includes('DENIED') || e.msg.includes('ISOLATED') ? 'text-red-500' :
+                       e.msg.includes('ANOMALY') || e.msg.includes('DEGRADED') || e.msg.includes('LOW') ? 'text-orange-400' :
+                       e.msg.includes('TAN') || e.msg.includes('RESTORED') ? 'text-green-400' :
+                       'text-slate-400'
+                     }>{e.msg}</span>
+                   </div>
+                 ))}
+                 {visibleEvents.length === 0 && (
+                   <div className="text-gray-500 italic">No events yet — playback will reveal backend-generated events.</div>
+                 )}
               </div>
             )}
             
-            {activeTab === 'POSITION ERROR' || activeTab === 'SYSTEM STATUS' || activeTab === 'FDI SUMMARY' ? (
+            {activeTab === 'FDI SUMMARY' && (
+                <div className="font-mono text-[10px] grid grid-cols-3 gap-6">
+                  {[
+                    { label: 'GNSS', status: state.fdi_gnss, accepted: state.gnss_accepted },
+                    { label: 'RADAR', status: state.fdi_radar, accepted: state.radar_accepted },
+                    { label: 'MAGNETOMETER', status: state.fdi_mag, accepted: state.mag_accepted },
+                  ].map(s => (
+                    <div key={s.label} className="bg-slate-900 p-3 border border-slate-800">
+                      <div className="text-slate-500 mb-1">{s.label}</div>
+                      <div className={`font-bold ${s.status === 'ISOLATED' ? 'text-red-500' : s.status === 'SUSPECTED' ? 'text-orange-500' : 'text-green-500'}`}>
+                        {s.status}
+                      </div>
+                      <div className="text-slate-400 mt-1">{s.accepted ? 'USED BY EKF' : 'EXCLUDED'}</div>
+                    </div>
+                  ))}
+                </div>
+            )}
+
+            {activeTab === 'ML DETAILS' && (
+              <div className="font-mono text-[10px] grid grid-cols-3 gap-6">
+                <div className="space-y-1"><div className="text-slate-500">ML ANOMALY MONITOR · ISOLATION FOREST</div><div className={state.ml_status === 'ANOMALOUS' ? 'text-orange-400 font-bold' : 'text-green-500 font-bold'}>{state.ml_status}</div><div>DECISION SCORE: {state.ml_score === null ? 'N/A' : state.ml_score.toFixed(4)}</div><div className="text-slate-500">ADVISORY ONLY — DOES NOT OVERRIDE DETERMINISTIC FDI OR EKF.</div></div>
+                <div className="space-y-1"><div className="text-slate-500">OFFLINE EVALUATION</div><div>ISOLATION FOREST · UNSUPERVISED · 13 FEATURES</div><div>12,476 HEALTHY TRAINING SAMPLES · 14,076 EVALUATION SAMPLES</div><div>PRECISION 35.26% · RECALL 51.13% · F1 41.73% · ACCURACY 83.77%</div></div>
+                <div className="space-y-1"><div className="text-slate-500">ML PATH</div><div>NAVIGATION RECORD ↓ FEATURE ENGINEERING ↓ 13 FEATURES ↓ ISOLATION FOREST ↓ ANOMALY SCORE ↓ ML STATUS</div><div className="text-slate-500">ML DOES NOT MODIFY FDI, TAN, OR EKF.</div></div>
+              </div>
+            )}
+
+            {activeTab === 'POSITION ERROR' || activeTab === 'SYSTEM STATUS' ? (
                 <div className="font-mono text-[10px] text-gray-500 h-full flex items-center justify-center">
-                    Data populating from demoReplay.ts...
+                    Data sourced from FastAPI navigation engine...
                 </div>
             ) : null}
           </div>

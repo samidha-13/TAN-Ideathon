@@ -1,68 +1,66 @@
-import Papa from 'papaparse';
-
-export interface TrajectoryData {
+export interface NavigationRecord {
+  timestamp: number;
   mission_index: number;
-  timestamp: number;
-  latitude: number;
-  longitude: number;
-  altitude: number;
-  velocity_n: number;
-  velocity_e: number;
-  velocity_d: number;
-  roll: number;
-  pitch: number;
-  yaw: number;
+  estimated_lat: number;
+  estimated_lon: number;
+  estimated_alt: number;
+  ins_lat: number;
+  ins_lon: number;
+  ins_alt: number;
+  nav_mode: string;
+  gnss_accepted: boolean;
+  radar_accepted: boolean;
+  mag_accepted: boolean;
+  tan_valid: boolean;
+  tan_match_score: number;
+  tan_residual_m: number;
+  terrain_obs: string;
+  magnav_available: boolean;
+  magnav_quality: string;
+  uncertainty_lat_m: number;
+  uncertainty_lon_m: number;
+  uncertainty_alt_m: number;
+  fdi_radar: string;
+  fdi_gnss: string;
+  fdi_mag: string;
+  truth_lat: number;
+  truth_lon: number;
+  error_lat_m: number;
+  error_lon_m: number;
+  error_3d_m: number;
+  ins_drift_m: number;
+  ground_speed_mps: number;
+  vertical_speed_mps: number;
+  turn_rate_dps: number;
+  g_load: number;
+  event: string;
+  ml_status: string;
+  ml_score: number | null;
 }
 
-export interface GNSSData {
-  timestamp: number;
-  status: string;
-  latitude: number;
-  longitude: number;
-  altitude: number;
-  velocity_n: number;
-  velocity_e: number;
-  velocity_d: number;
+export interface MissionInfo {
+  id: string;
+  name: string;
 }
 
-export interface FaultsData {
-  [timestamp: string]: {
-    GNSS: string;
-    Radar: string;
-    Magnetometer: string;
-  };
-}
+const API_BASE = 'http://localhost:8000/api';
 
-export const loadTrajectoryData = async (missionName: string): Promise<TrajectoryData[]> => {
-  const response = await fetch(`/data/missions/${missionName}/trajectory.csv`);
-  const text = await response.text();
-  return new Promise((resolve) => {
-    Papa.parse(text, {
-      header: true,
-      dynamicTyping: true,
-      complete: (results) => {
-        resolve(results.data as TrajectoryData[]);
-      },
-    });
-  });
+export const loadMissions = async (): Promise<MissionInfo[]> => {
+  try {
+    const response = await fetch(`${API_BASE}/missions`);
+    if (!response.ok) throw new Error('Backend Offline');
+    return await response.json();
+  } catch (error) {
+    throw new Error('BACKEND OFFLINE');
+  }
 };
 
-export const loadGNSSData = async (missionName: string): Promise<GNSSData[]> => {
-  const response = await fetch(`/data/missions/${missionName}/gnss.csv`);
-  const text = await response.text();
-  return new Promise((resolve) => {
-    Papa.parse(text, {
-      header: true,
-      dynamicTyping: true,
-      complete: (results) => {
-        resolve(results.data as GNSSData[]);
-      },
-    });
-  });
-};
-
-export const loadFaultsData = async (missionName: string): Promise<FaultsData> => {
-  const response = await fetch(`/data/missions/${missionName}/faults.json`);
-  const json = await response.json();
-  return json as FaultsData;
+export const loadNavigationData = async (missionId: string): Promise<NavigationRecord[]> => {
+  try {
+    const response = await fetch(`${API_BASE}/navigation/${missionId}/state`);
+    if (!response.ok) throw new Error('Navigation data unavailable');
+    return await response.json();
+  } catch (error) {
+    throw new Error('BACKEND OFFLINE');
+  }
 };

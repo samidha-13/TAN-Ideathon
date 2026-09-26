@@ -70,14 +70,16 @@ class TestINSPropagation(unittest.TestCase):
         # After 10 seconds, drift should have accumulated
         self.assertGreater(ins.state.pos_drift_m, 0.0)
 
-    def test_reset_position(self):
-        """reset_position should update lat/lon/alt."""
+    def test_apply_corrections(self):
+        """apply_corrections should update pos/vel/att."""
         ins = INSPropagator(30.0, 78.0, 5000.0)
-        ins.reset_position(31.0, 79.0, 4000.0)
+        ins.apply_corrections(30.5, 77.5, 5100.0, 10.0, -10.0, 0, 0, 0, 0)
         s = ins.state
-        self.assertAlmostEqual(s.latitude,  31.0)
-        self.assertAlmostEqual(s.longitude, 79.0)
-        self.assertAlmostEqual(s.altitude,  4000.0)
+        self.assertAlmostEqual(s.latitude,  30.5)
+        self.assertAlmostEqual(s.longitude, 77.5)
+        self.assertAlmostEqual(s.altitude,  5100.0)
+        self.assertAlmostEqual(s.vel_north, 10.0)
+        self.assertAlmostEqual(s.vel_east, -10.0)
 
     def test_position_property(self):
         """position property returns (lat, lon, alt) tuple."""

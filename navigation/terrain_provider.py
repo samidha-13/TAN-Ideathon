@@ -178,16 +178,20 @@ class SRTMTerrainProvider:
     @staticmethod
     def _sample(ds: rasterio.DatasetReader, lat: float, lon: float) -> float:
         """
-        Bilinearly-interpolated sample from the raster at (lat, lon).
-        Falls back to nearest-neighbour if the point is outside the dataset
-        bounds (should not happen for valid mission coordinates).
+        Sample from the raster at (lat, lon).
         """
-        # rasterio rowcol returns integer pixel row/col for the given transform
-        # We use the dataset's own transform for exact coordinate mapping.
         try:
-            # Use rasterio's built-in sample (returns iterator of arrays)
-            vals = list(ds.sample([(lon, lat)]))  # sample takes (x=lon, y=lat)
-            value = float(vals[0][0])
+            # Get the in-memory array if we haven't already attached it
+            if not hasattr(ds, 'cached_array'):
+                ds.cached_array = ds.read(1)
+            
+            row, col = ds.index(lon, lat)
+            
+            # Check bounds manually since index can return out-of-bounds
+            if row < 0 or row >= ds.height or col < 0 or col >= ds.width:
+                return 0.0
+                
+            value = float(ds.cached_array[row, col])
             # SRTM nodata is typically -32768 or 0 in ocean areas
             if value < -1000 or value > 9000:
                 logger.debug(
