@@ -1,0 +1,21 @@
+{
+  "mission_name": "flat_plain_mission",
+  "bounds": {
+    "lat_min": 25.0,
+    "lat_max": 25.5,
+    "lon_min": 81.5,
+    "lon_max": 82.0
+  },
+  "waypoints": [
+    {"lat": 25.05, "lon": 81.55},
+    {"lat": 25.12, "lon": 81.65},
+    {"lat": 25.20, "lon": 81.75},
+    {"lat": 25.28, "lon": 81.85},
+    {"lat": 25.38, "lon": 81.94},
+    {"lat": 25.47, "lon": 81.70}
+  ],
+  "altitude": 2000.0,
+  "velocity": 220.0,
+  "sample_rate": 10,
+  "seed": 45
+}

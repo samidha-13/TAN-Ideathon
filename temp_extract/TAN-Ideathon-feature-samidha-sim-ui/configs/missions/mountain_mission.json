@@ -1,0 +1,21 @@
+{
+  "mission_name": "mountain_mission",
+  "bounds": {
+    "lat_min": 30.0,
+    "lat_max": 30.3,
+    "lon_min": 78.0,
+    "lon_max": 78.4
+  },
+  "waypoints": [
+    {"lat": 30.05, "lon": 78.05},
+    {"lat": 30.10, "lon": 78.12},
+    {"lat": 30.16, "lon": 78.20},
+    {"lat": 30.22, "lon": 78.28},
+    {"lat": 30.27, "lon": 78.34},
+    {"lat": 30.12, "lon": 78.38}
+  ],
+  "altitude": 5000.0,
+  "velocity": 200.0,
+  "sample_rate": 10,
+  "seed": 42
+}

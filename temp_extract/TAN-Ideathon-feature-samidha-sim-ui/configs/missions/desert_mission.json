@@ -1,0 +1,21 @@
+{
+  "mission_name": "desert_mission",
+  "bounds": {
+    "lat_min": 26.5,
+    "lat_max": 27.0,
+    "lon_min": 70.5,
+    "lon_max": 71.0
+  },
+  "waypoints": [
+    {"lat": 26.55, "lon": 70.55},
+    {"lat": 26.62, "lon": 70.65},
+    {"lat": 26.70, "lon": 70.75},
+    {"lat": 26.78, "lon": 70.85},
+    {"lat": 26.88, "lon": 70.94},
+    {"lat": 26.95, "lon": 70.65}
+  ],
+  "altitude": 3000.0,
+  "velocity": 250.0,
+  "sample_rate": 10,
+  "seed": 43
+}
